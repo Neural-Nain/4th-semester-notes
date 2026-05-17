@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("infosec-notes-theme") !== "light") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+  <title>Topic 3 — Protection Models</title>
+  <link rel="stylesheet" href="../../assets/css/notes.css">
+  <script src="../../assets/js/theme.js" defer></script>
+</head>
+<body>
+  <div class="page-wrapper has-toc-nav">
+    <aside class="sidebar toc" id="sidebar-nav">
+      <p class="toc-title">On this page</p>
+      <nav aria-label="Table of contents">
+        <ul>
+          <li><a href="#sec-3-1">3.1 Introduction</a></li>
+          <li><a href="#sec-acm">Access Control Models</a>
+            <ul>
+              <li><a href="#mac">MAC</a></li>
+              <li><a href="#dac">DAC</a></li>
+              <li><a href="#rbac">RBAC</a></li>
+              <li><a href="#abac">ABAC</a></li>
+              <li><a href="#rubac">RuBAC</a></li>
+            </ul>
+          </li>
+          <li><a href="#sec-confidentiality">Confidentiality Models</a></li>
+          <li><a href="#sec-integrity">Integrity Models</a></li>
+          <li><a href="#sec-tcb">Trusted Computing Base</a></li>
+          <li><a href="#sec-availability">Availability Models</a></li>
+          <li><a href="#sec-defense-depth">Defense in Depth</a></li>
+          <li><a href="#sec-least-privilege">Least Privilege</a></li>
+          <li><a href="#sec-pola">POLA</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="site-header">
+        <h1>3. Protection Models</h1>
+        <p class="topic-meta">
+          <a href="../../index.html">← All books</a>
+          · <a href="../index.html">Book index</a>
+          · <a href="02-authentication-models.html">Topic 2</a>
+        </p>
+        <div class="header-actions">
+          <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="sidebar-nav" aria-label="Open page navigation">
+            <span class="nav-toggle-icon" aria-hidden="true">
+              <span class="nav-toggle-bar"></span>
+              <span class="nav-toggle-bar"></span>
+              <span class="nav-toggle-bar"></span>
+            </span>
+            <span class="nav-toggle-label">Menu</span>
+          </button>
+          <button type="button" class="theme-toggle" aria-pressed="false">
+            <span class="theme-toggle-label">Dark mode</span>
+          </button>
+        </div>
+      </header>
+
+      <section id="sec-3-1">
+        <h2>3.1 Introduction</h2>
+        <p>
+          In modern computing systems, protection models provide the conceptual, architectural, and mathematical
+          frameworks required to enforce security policies. While standard OS isolation mechanisms (like CPU Execution
+          Rings) handle low-level process separation, formal protection models dictate how users and systems interact
+          with sensitive applications and data.
+        </p>
+        <p>
+          These frameworks map directly to the pillars of security, organizing defenses across
+          <strong>Access Control</strong>, <strong>Confidentiality</strong>, <strong>Integrity</strong>,
+          <strong>Availability</strong>, <strong>Layered Architectures</strong>, and <strong>Human Factors</strong>.
+        </p>
+      </section>
+
+      <section id="sec-acm">
+        <h2>1. Access Control Models (ACM)</h2>
+        <p>
+          Access Control Models define the structural mechanisms through which a system determines whether a verified
+          subject has the right to access a specific object.
+        </p>
+
+        <h3 id="mac">Mandatory Access Control (MAC)</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>A strict, non-discretionary access control model where security policies are centrally defined and managed by a system administrator. Individual users have absolutely no power to alter permissions or share access to files they own.</p>
+        </blockquote>
+        <p><strong>How it works:</strong> It relies on an administrative classification system. Every subject is assigned a security clearance level (e.g., Secret, Top Secret), and every object is assigned a classification label. The operating system kernel enforces access by checking if the subject's clearance level matches or exceeds the object's classification label.</p>
+        <p><strong>Implementation Examples:</strong> SELinux (Security-Enhanced Linux) in Ubuntu/RedHat, and military data isolation systems.</p>
+        <p><strong>Pros:</strong> Highly secure; completely immune to user negligence or malicious data-sharing scripts.</p>
+        <p><strong>Cons:</strong> Extremely rigid, complex to configure, and demands high administrative overhead.</p>
+
+        <h3 id="dac">Discretionary Access Control (DAC)</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>An access control model where the owner of an object holds complete discretion over who is allowed to access that resource and what permissions they have.</p>
+        </blockquote>
+        <p><strong>How it works:</strong> Access is determined entirely by the identity of the subject and permissions explicitly mapped in an Access Control List (ACL). If you create a file, you are its data owner and can pass read/write permissions to any other user on the system.</p>
+        <p><strong>Implementation Examples:</strong> Standard POSIX/Linux file permissions (<code>chmod</code>), Windows NTFS file properties.</p>
+        <p><strong>Pros:</strong> Highly flexible, user-friendly, and simple to implement in standard corporate networks.</p>
+        <p><strong>Cons:</strong> Inherently weak security. If a user's account is compromised, the attacker can alter permissions on all files owned by that user or accidentally share sensitive assets.</p>
+
+        <h3 id="rbac">Role-Based Access Control (RBAC)</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>Access control determined by organizational roles rather than individual user identities.</p>
+        </blockquote>
+        <p><strong>How it works:</strong> Permissions are explicitly tied to specific Roles (e.g., Billing Account Manager, Software Developer, HR Specialist). Users are assigned to these roles. When a user changes departments, their role assignment is updated, and they automatically inherit the new set of permissions.</p>
+        <p><strong>Implementation Examples:</strong> Enterprise Active Directory configurations, Jira project permissions, and WordPress user roles (Administrator, Editor, Author).</p>
+        <p><strong>Pros:</strong> Scales efficiently in massive organizations; drastically reduces administrative bloat.</p>
+        <p><strong>Cons:</strong> Can suffer from <strong>Role Explosion</strong>, where organizations create hundreds of hyper-specific roles, making audits incredibly difficult.</p>
+
+        <h3 id="abac">Attribute-Based Access Control (ABAC)</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>A highly flexible, next-generation access control model that grants access rights based on a real-time evaluation of attributes.</p>
+        </blockquote>
+        <p><strong>How it works:</strong> The policy engine looks at four distinct types of attributes before rendering a decision:</p>
+        <ul>
+          <li><strong>Subject attributes:</strong> Role, department, age, clearance level.</li>
+          <li><strong>Object attributes:</strong> File type, department owner, classification level.</li>
+          <li><strong>Action attributes:</strong> Read, write, delete, edit.</li>
+          <li><strong>Environment attributes:</strong> Current time, login location, network subnet, device health.</li>
+        </ul>
+        <p><strong>Example Rule:</strong> "Allow the user to read the Financial database IF their role is Accountant, AND the file is marked Finance, AND they are logging in from the office IP address, AND the time is between 9:00 AM and 5:00 PM."</p>
+        <p><strong>Pros:</strong> Context-aware; allows for incredibly precise, granular access rules.</p>
+        <p><strong>Cons:</strong> Requires a highly sophisticated central policy evaluation engine, causing minor computational latency during access checks.</p>
+
+        <h3 id="rubac">Rule-Based Access Control (RuBAC)</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>An access model where access permissions are dictated by strict, system-enforced rules or conditions, independent of the user's role or identity.</p>
+        </blockquote>
+        <p><strong>How it works:</strong> It acts as a set of global filters. If the request meets the predefined system criteria, it is allowed; if not, it is blocked.</p>
+        <p><strong>Implementation Examples:</strong> Network firewalls (e.g., blocking all traffic on port 22 unless it matches a specific source IP), router access control filters, or time-locked digital bank vaults.</p>
+      </section>
+
+      <section id="sec-confidentiality">
+        <h2>2. Confidentiality Models</h2>
+        <p>
+          Confidentiality models are mathematical and logical frameworks designed primarily to prevent unauthorized
+          information disclosure or leakage, frequently used in secure government, military, and corporate cloud platforms.
+        </p>
+
+        <h3 id="blp">Bell-LaPadula Model (BLP)</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>A state-machine model built explicitly to enforce data confidentiality within a hierarchical multi-level security system.</p>
+        </blockquote>
+        <p><strong>The Core Philosophy:</strong> It prevents data from moving from a high security level down to a lower security level (preventing information leaks).</p>
+        <p><strong>The Two Mathematical Rules:</strong></p>
+        <ul>
+          <li><strong>Simple Security Property (No Read Up):</strong> A subject at a lower clearance level cannot read an object at a higher classification level. (e.g., A clerk with Secret clearance cannot read a Top Secret file).</li>
+          <li><strong>★-Property (Star Property — No Write Down):</strong> A subject at a higher clearance level cannot write data down to an object at a lower classification level. (e.g., An officer viewing a Top Secret file cannot write that data into a Secret file, preventing accidental or malicious leaks).</li>
+        </ul>
+        <p><strong>Pros:</strong> Provides absolute, mathematically proven data confidentiality.</p>
+        <p><strong>Cons:</strong> Completely ignores data integrity. A lower-level user could overwrite and destroy high-level data.</p>
+
+        <h3 id="lattice">Lattice-Based Security Model</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>A broader structural mathematical model that underpins frameworks like Bell-LaPadula.</p>
+        </blockquote>
+        <p>
+          <strong>How it works:</strong> It defines a clear mathematical structure containing a partially ordered set of security
+          levels, complete with a unique upper bound (Least Upper Bound) and a lower bound (Greatest Lower Bound). A subject
+          can only access an object if their security clearance falls perfectly within the defined lattice boundary parameters.
+        </p>
+
+        <h3 id="non-interference">Non-Interference Model</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>An advanced mathematical confidentiality model that focuses on high-level system behaviors rather than individual file access actions.</p>
+        </blockquote>
+        <p>
+          <strong>How it works:</strong> It demands that actions performed by a highly privileged subject (high-level inputs) can
+          have absolutely no visible effect, modification, or interference on the system states observable by lower-privileged
+          users (low-level outputs). If a low-level user can analyze system performance delays or error changes caused by a
+          high-level process, they could infer secret data through covert side-channels. Non-interference systematically strips
+          out these channels.
+        </p>
+      </section>
+
+      <section id="sec-integrity">
+        <h2>3. Integrity Models</h2>
+        <p>
+          Integrity models prioritize the absolute validity, accuracy, and trustworthiness of information, ensuring that
+          unauthorized modifications are impossible.
+        </p>
+
+        <h3 id="biba">Biba Model</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>The exact mathematical mirror image of the Bell-LaPadula model, explicitly optimized to preserve data integrity instead of confidentiality.</p>
+        </blockquote>
+        <p><strong>The Core Philosophy:</strong> It prevents low-integrity (untrustworthy) information from corrupting high-integrity (trustworthy) systems.</p>
+        <p><strong>The Two Mathematical Rules:</strong></p>
+        <ul>
+          <li><strong>Simple Integrity Property (No Read Down):</strong> A subject at a high integrity level cannot read an object at a lower integrity level. (Reason: Reading unverified, low-integrity data could corrupt the high-level user's logical workflow).</li>
+          <li><strong>★-Integrity Property (No Write Up):</strong> A subject at a lower integrity level cannot write data up to an object at a higher integrity level. (Reason: Prevents an untrusted user or malware process from editing or modifying a highly critical system file).</li>
+        </ul>
+        <p><strong>Pros:</strong> Highly effective at protecting core system configurations and operational kernels from external corruption.</p>
+        <p><strong>Cons:</strong> Completely ignores confidentiality. High-level secrets can freely flow down to low-level targets.</p>
+
+        <h3 id="clark-wilson">Clark-Wilson Model</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>A highly practical, real-world integrity model designed specifically for commercial business and financial environments rather than military structures.</p>
+        </blockquote>
+        <p><strong>How it works:</strong> It shifts focus away from simple clearance levels, enforcing integrity through two primary real-world concepts:</p>
+        <ul>
+          <li><strong>Well-Formed Transactions:</strong> Users cannot modify data directly or arbitrarily. They can only manipulate data by executing a highly structured, specific program or software API. This ensures that data formatting is perfectly validated at every step.</li>
+          <li><strong>Separation of Duties (SoD):</strong> Divides critical operations among multiple distinct individuals to prevent internal fraud.</li>
+        </ul>
+        <p><strong>Key Components:</strong></p>
+        <ul>
+          <li><strong>CDI (Constrained Data Items):</strong> Highly sensitive data that must be protected by the integrity model (e.g., bank account balances).</li>
+          <li><strong>UDI (Unconstrained Data Items):</strong> Unvalidated data coming from outside sources (e.g., a raw user text input box).</li>
+          <li><strong>IVPs (Integrity Verification Procedures):</strong> Background processes that constantly audit and verify that CDIs conform to valid business states.</li>
+          <li><strong>TPs (Transformation Procedures):</strong> Well-formed application transactions that safely take UDIs, validate them, and convert them into CDIs.</li>
+        </ul>
+
+        <h3 id="brewer-nash">Brewer-Nash Model (The Chinese Wall)</h3>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>A dynamic access model designed specifically to prevent Conflicts of Interest within consulting firms, financial systems, or legal institutions.</p>
+        </blockquote>
+        <p>
+          <strong>How it works:</strong> It constructs a fluid, invisible barrier around data based on user history.
+        </p>
+        <p>
+          <strong>Example:</strong> A consultant works at an agency that services both Company X and Company Y (who are direct
+          market competitors). The moment the consultant opens a file belonging to Company X, the Brewer-Nash model dynamically
+          adjusts their permissions in real-time, completely blocking them from reading or opening any files related to Company Y.
+        </p>
+        <div class="callout exam">
+          <div class="callout-title">Note on CAP Theorem</div>
+          <p>
+            In computer science, the term <strong>CAP Theorem</strong> (Consistency, Availability, Partition Tolerance) is a
+            distributed systems database concept. The <strong>Brewer-Nash</strong> framework itself refers specifically to the
+            Chinese Wall security model for conflict isolation—not the CAP trade-off theorem.
+          </p>
+        </div>
+      </section>
+
+      <section id="sec-tcb">
+        <h2>4. Trusted Computing Base (TCB) Model</h2>
+        <blockquote class="def">
+          <span class="term">Definition</span>
+          <p>The complete collection of all hardware, software, firmware, and logical execution paths inside a computer system that are absolutely essential for enforcing its security policy.</p>
+        </blockquote>
+        <p>
+          <strong>The Core Rule:</strong> The TCB must be kept as small, isolated, and simple as possible. Every line of code
+          added to the TCB increases the system's attack surface. If any component inside the TCB is compromised, the security of
+          the entire ecosystem is broken.
+        </p>
+      </section>
+
+      <section id="sec-availability">
+        <h2>5. Availability Models</h2>
+        <p>
+          Availability models outline the architectural frameworks and operational strategies required to ensure systems remain
+          operational and accessible to authorized users.
+        </p>
+
+        <h3>1. Redundancy and Failover</h3>
+        <p>
+          Eliminating single points of failure by deploying backup hardware, networks, and storage pools. If a primary component
+          drops offline, an automated tracking protocol instantly executes a <strong>failover</strong>, routing traffic to the
+          backup node with minimal interruption.
+        </p>
+
+        <h3>2. Load Balancing</h3>
+        <p>
+          Reverse proxies and traffic distribution networks (like Nginx, HAProxy, or AWS ALB) that receive incoming web traffic
+          and distribute it across a cluster of backend servers. This prevents any single node from becoming overwhelmed,
+          optimizing response speeds and resource usage.
+        </p>
+
+        <h3>3. Fault Tolerance</h3>
+        <p>
+          The built-in capacity of a computer or infrastructure environment to continue operating normally despite catastrophic
+          hardware failures occurring within its systems (e.g., utilizing dual-power supplies or multi-disk RAID matrices).
+        </p>
+
+        <h3>4. Disaster Recovery (DR) and Business Continuity Planning (BCP)</h3>
+        <ul>
+          <li><strong>BCP:</strong> The operational strategy defining how an organization keeps its vital business functions running during a major crisis.</li>
+          <li><strong>DR:</strong> The technical workflows, backup storage systems, and recovery scripts executed to restore completely lost IT systems and data infrastructure following a physical or digital catastrophe.</li>
+        </ul>
+
+        <h3>5. Distributed Denial-of-Service (DDoS) Mitigation</h3>
+        <p>
+          Utilizing cloud-scrubbing networks (such as Cloudflare or AWS Shield) that sit in front of the application network,
+          analyzing incoming traffic patterns in real-time to drop malicious botnet requests while passing legitimate user traffic
+          cleanly through.
+        </p>
+
+        <h3>6. Incident Response and Incident Management</h3>
+        <p>
+          A structured operational framework followed by an organization's security team (SOC) to detect, contain, eliminate,
+          and recover from an active security breach or system compromise.
+        </p>
+
+        <h3>7. Scalability and Capacity Planning</h3>
+        <ul>
+          <li><strong>Vertical Scaling (Scaling Up):</strong> Adding more CPU or RAM to an existing server.</li>
+          <li><strong>Horizontal Scaling (Scaling Out):</strong> Automatically spinning up entirely new server instances to handle massive incoming traffic loads.</li>
+        </ul>
+
+        <h3>8. Monitoring and Alerting</h3>
+        <p>
+          Background metrics-gathering infrastructure (e.g., Prometheus, Grafana, Datadog) that constantly tracks CPU usage,
+          network errors, and memory saturation, instantly firing off notifications to system administrators before a resource
+          exhaustion event causes a system crash.
+        </p>
+      </section>
+
+      <section id="sec-defense-depth">
+        <h2>6. Defense in Depth Model (Layered Security)</h2>
+        <p>
+          The Defense in Depth model works on the principle that no single security control is perfect. By stacking multiple
+          distinct protective layers across the organization, an attacker who breaks through one layer will be stopped by the next.
+        </p>
+
+        <figure class="diagram" aria-labelledby="did-caption">
+          <svg viewBox="0 0 320 280" width="320" height="280" role="img" aria-label="Defense in depth layers stacked from physical to data">
+            <rect x="40" y="220" width="240" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="95" y="238" font-size="10" fill="currentColor">Physical Security</text>
+            <rect x="50" y="188" width="220" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="88" y="206" font-size="10" fill="currentColor">Perimeter Security</text>
+            <rect x="60" y="156" width="200" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="95" y="174" font-size="10" fill="currentColor">Network Security</text>
+            <rect x="70" y="124" width="180" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="95" y="142" font-size="10" fill="currentColor">Host-Based Security</text>
+            <rect x="80" y="92" width="160" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="88" y="110" font-size="10" fill="currentColor">Application Security</text>
+            <rect x="90" y="60" width="140" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="108" y="78" font-size="10" fill="currentColor">Data Security</text>
+            <rect x="100" y="28" width="120" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="108" y="46" font-size="10" fill="currentColor">User Security</text>
+            <text x="115" y="18" font-size="9" fill="currentColor" opacity="0.7">Attacker ▼</text>
+          </svg>
+          <figcaption id="did-caption">Defense in Depth — layered controls from physical perimeter to data and users.</figcaption>
+        </figure>
+
+        <h3>1. Physical Security</h3>
+        <p>Protecting the physical buildings, server rooms, and hardware terminals from manual intrusion.</p>
+        <p><strong>Controls:</strong> Biometric door locks, CCTV cameras, security guards, fences, and server rack cages.</p>
+
+        <h3>2. Perimeter Security</h3>
+        <p>The first line of digital defense blocking the external internet from the internal network.</p>
+        <p><strong>Controls:</strong> Edge firewalls, DDoS protection layers, secure DNS routing, and edge routers.</p>
+
+        <h3>3. Network Security</h3>
+        <p>Controlling how data travels inside the internal network architecture once the perimeter is crossed.</p>
+        <p><strong>Controls:</strong> Network segmentation (VLANs), Intrusion Detection/Prevention Systems (IDS/IPS), and internal network firewalls.</p>
+
+        <h3>4. Host-Based Security</h3>
+        <p>Securing individual endpoints, workstations, and server operating systems.</p>
+        <p><strong>Controls:</strong> Endpoint Detection and Response (EDR) software, OS patch management, and local host firewalls.</p>
+
+        <h3>5. Application Security</h3>
+        <p>Protecting software, APIs, and web code running on the host platforms.</p>
+        <p><strong>Controls:</strong> Web Application Firewalls (WAF), input validation, secure source code audits, and dependency vulnerability scanning.</p>
+
+        <h3>6. Data Security</h3>
+        <p>The final, core layer focusing strictly on protecting the actual data assets themselves.</p>
+        <p><strong>Controls:</strong> Database encryption at rest, data masking, tokenization, and strict file access permissions.</p>
+
+        <h3>7. User Security (The Human Element)</h3>
+        <p>Defending against social engineering and human errors.</p>
+        <p><strong>Controls:</strong> Phishing simulation drills, mandatory security awareness training, and multi-factor authentication mandates.</p>
+      </section>
+
+      <section id="sec-least-privilege">
+        <h2>7. Least Privilege Model</h2>
+        <p>
+          The Principle of Least Privilege (PoLP) is a foundational protection model designed to limit access rights for users,
+          accounts, and processes to the absolute bare minimum required to complete a given task.
+        </p>
+        <ol>
+          <li><strong>Principle of Minimal Privilege:</strong> Restricting accounts so they hold zero administrative capabilities unless specifically needed, containing the scope of potential damages.</li>
+          <li><strong>Segregation of Duties (SoD):</strong> Splitting critical administrative workflows across independent accounts to prevent internal fraud.</li>
+          <li><strong>Access Controls:</strong> Implementing precise access matrices (RBAC or ABAC) to explicitly bind users to defined boundaries.</li>
+          <li><strong>Privilege Escalation Mitigation:</strong> Implementing technical guardrails to prevent attackers from using bugs to upgrade from a standard user account to root/administrator access (e.g., blocking unsafe script execution routes or securing sudo file access blocks).</li>
+          <li><strong>Enhanced Security:</strong> Minimizing the organization's overall attack surface, preventing malware from spreading across network nodes.</li>
+          <li><strong>Compliance Requirements:</strong> Meeting legal audit standards (like ISO 27001, SOC2, or PCI-DSS), which explicitly demand documented proofs of user permission constraints.</li>
+        </ol>
+      </section>
+
+      <section id="sec-pola">
+        <h2>8. Principle of Least Astonishment (POLA) Model</h2>
+        <p>
+          While mostly discussed in user interface (UI) and software API engineering, the Principle of Least Astonishment (POLA)—also
+          called the <strong>Principle of Least Surprise</strong>—is a vital model in security design.
+        </p>
+        <p><strong>Core Concept:</strong> A system component, security policy, or interface should behave exactly as an experienced user would logically expect it to behave. It should never shock, surprise, or confuse the user.</p>
+        <p>
+          <strong>Security Context:</strong> If a security system or permission mechanism is overly complex, counter-intuitive, or
+          unpredictable, users will become frustrated. When users are confused by security tools, they actively look for
+          workarounds—such as writing passwords on sticky notes, using unapproved shadow IT tools, or disabling local firewalls—ultimately
+          exposing the organization to major security risks. Security systems must remain transparent, intuitive, and highly predictable
+          to be effective.
+        </p>
+      </section>
+
+      <footer class="page-footer">
+        <a href="02-authentication-models.html">← Topic 2</a>
+        <a href="../index.html">Book index</a>
+        <a href="../../index.html">All books</a>
+        <span>Topic 4 — coming soon</span>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
