@@ -3,13 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("infosec-notes-theme") !== "light") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
   <title>Topic 1 — Introduction to Information Security</title>
   <link rel="stylesheet" href="../../assets/css/notes.css">
   <script src="../../assets/js/theme.js" defer></script>
 </head>
 <body>
-  <div class="page-wrapper">
-    <aside class="sidebar toc">
+  <div class="page-wrapper has-toc-nav">
+    <aside class="sidebar toc" id="sidebar-nav">
       <p class="toc-title">On this page</p>
       <nav aria-label="Table of contents">
         <ul>
@@ -47,6 +58,14 @@
           · <a href="../index.html">Book index</a>
         </p>
         <div class="header-actions">
+          <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="sidebar-nav" aria-label="Open page navigation">
+            <span class="nav-toggle-icon" aria-hidden="true">
+              <span class="nav-toggle-bar"></span>
+              <span class="nav-toggle-bar"></span>
+              <span class="nav-toggle-bar"></span>
+            </span>
+            <span class="nav-toggle-label">Menu</span>
+          </button>
           <button type="button" class="theme-toggle" aria-pressed="false">
             <span class="theme-toggle-label">Dark mode</span>
           </button>
