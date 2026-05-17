@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topic 1 — Introduction to Information Security</title>
+  <link rel="stylesheet" href="../../assets/css/notes.css">
+  <script src="../../assets/js/theme.js" defer></script>
+</head>
+<body>
+  <div class="page-wrapper">
+    <aside class="sidebar toc">
+      <p class="toc-title">On this page</p>
+      <nav aria-label="Table of contents">
+        <ul>
+          <li><a href="#sec-1-1">1.1 Information Security (InfoSec)</a></li>
+          <li><a href="#sec-1-2">1.2 Information Security Goals</a>
+            <ul>
+              <li><a href="#confidentiality">Confidentiality</a></li>
+              <li><a href="#integrity">Integrity</a></li>
+              <li><a href="#availability">Availability</a></li>
+            </ul>
+          </li>
+          <li><a href="#sec-1-3">1.3 Information Security Principles</a></li>
+          <li><a href="#sec-1-4">1.4 InfoSec, Cybersecurity &amp; Network Security</a>
+            <ul>
+              <li><a href="#sec-1-4-1">1.4.1 Types of data</a></li>
+            </ul>
+          </li>
+          <li><a href="#sec-1-5">1.5 Elements of Information Security</a></li>
+          <li><a href="#sec-1-6">1.6 Deep Dive: Basic Notions of CIA</a>
+            <ul>
+              <li><a href="#cia-confidentiality">Confidentiality (secrecy)</a></li>
+              <li><a href="#cia-integrity">Integrity (trustworthiness)</a></li>
+              <li><a href="#cia-availability">Availability (accessibility)</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="site-header">
+        <h1>1. Introduction to Information Security</h1>
+        <p class="topic-meta">
+          <a href="../../index.html">← All books</a>
+          · <a href="../index.html">Book index</a>
+        </p>
+        <div class="header-actions">
+          <button type="button" class="theme-toggle" aria-pressed="false">
+            <span class="theme-toggle-label">Dark mode</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- 1.1 -->
+      <section id="sec-1-1">
+        <h2>1.1 Information Security (InfoSec)</h2>
+        <p>
+          Information Security (InfoSec) is the practice of protecting information and information systems from
+          unauthorized access, use, disclosure, disruption, modification, or destruction. It is an all-encompassing
+          discipline designed to ensure business continuity, minimize financial or reputational damage, and protect
+          critical assets regardless of the format the data takes (whether it is electronic, print, or even spoken word).
+        </p>
+        <p>
+          In a modern enterprise, InfoSec is not merely a technical concern handled by the IT department; it is a
+          fundamental pillar of corporate governance. It bridges the gap between organizational policy, human behavior,
+          and technical controls.
+        </p>
+
+        <h3>The Core Objective</h3>
+        <p>
+          To <strong>manage and mitigate risk</strong>. Because absolute security is mathematically and practically
+          impossible, InfoSec focuses on implementing a layered defense mechanism to bring risk down to an acceptable
+          level (known as <strong>residual risk</strong>).
+        </p>
+
+        <h3>Scope</h3>
+        <p>
+          It spans across <strong>physical security</strong> (e.g., locking server rooms),
+          <strong>administrative security</strong> (e.g., employee training and policies), and
+          <strong>technical security</strong> (e.g., firewalls and encryption).
+        </p>
+      </section>
+
+      <!-- 1.2 -->
+      <section id="sec-1-2">
+        <h2>1.2 Information Security Goals</h2>
+        <p>
+          The primary goals of Information Security are universally defined by the <strong>CIA Triad</strong>. These
+          three core goals form the bedrock of any security program, and every security control implemented in an
+          organization can be mapped back to one or more of these pillars.
+        </p>
+
+        <figure class="diagram" aria-labelledby="cia-caption">
+          <svg viewBox="0 0 340 300" width="340" height="300" role="img" aria-label="CIA triad: three overlapping circles for Confidentiality, Integrity, and Availability">
+            <circle cx="110" cy="120" r="80" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"/>
+            <circle cx="230" cy="120" r="80" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"/>
+            <circle cx="170" cy="200" r="80" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"/>
+            <text x="55" y="105" font-size="14" font-weight="600" fill="currentColor">Confidentiality</text>
+            <text x="215" y="105" font-size="14" font-weight="600" fill="currentColor">Integrity</text>
+            <text x="125" y="265" font-size="14" font-weight="600" fill="currentColor">Availability</text>
+            <text x="148" y="165" font-size="12" fill="currentColor" opacity="0.85">CIA Triad</text>
+          </svg>
+          <figcaption id="cia-caption">The CIA Triad — the three foundational goals of information security.</figcaption>
+        </figure>
+
+        <h3 id="confidentiality">1. Confidentiality</h3>
+        <p>
+          Confidentiality ensures that sensitive information is disclosed only to authorized individuals, entities, or
+          processes. It prevents unauthorized access to data, whether intentional (e.g., malicious hacking) or accidental
+          (e.g., sending an email to the wrong recipient).
+        </p>
+        <p><strong>Threats:</strong> Snooping, social engineering, packet sniffing, data leaks, and shoulder surfing.</p>
+        <p><strong>Mechanisms / Controls:</strong></p>
+        <ul>
+          <li><strong>Encryption:</strong> Transforming readable plaintext into unreadable ciphertext using cryptographic algorithms (at rest and in transit).</li>
+          <li><strong>Access Control Lists (ACLs):</strong> Restricting file permissions based on user roles.</li>
+          <li><strong>Multi-Factor Authentication (MFA):</strong> Ensuring the identity of the person accessing the data.</li>
+        </ul>
+
+        <h3 id="integrity">2. Integrity</h3>
+        <p>
+          Integrity guarantees that data remains accurate, complete, and unaltered throughout its entire lifecycle. It
+          ensures that information cannot be modified, deleted, or corrupted by unauthorized parties or system errors
+          without detection.
+        </p>
+        <p><strong>Threats:</strong> Man-in-the-Middle (MitM) attacks, unauthorized file edits, database tampering, and hardware bit rot.</p>
+        <p><strong>Mechanisms / Controls:</strong></p>
+        <ul>
+          <li><strong>Hashing:</strong> Generating a unique fixed-length string (like SHA-256) from a file. If even a single bit of the file changes, the hash changes completely.</li>
+          <li><strong>Digital Signatures:</strong> Providing non-repudiation and proving that a file or message came from a specific sender and wasn't altered.</li>
+          <li><strong>Version Control &amp; Backups:</strong> Enabling restoration to a known good state if unauthorized changes occur.</li>
+        </ul>
+
+        <h3 id="availability">3. Availability</h3>
+        <p>
+          Availability ensures that authorized users have reliable and timely access to information and computing
+          resources whenever they need them. A system that is completely secure but inaccessible to the business is useless.
+        </p>
+        <p><strong>Threats:</strong> Denial-of-Service (DoS) and Distributed Denial-of-Service (DDoS) attacks, hardware failures, power outages, and ransomware locking systems.</p>
+        <p><strong>Mechanisms / Controls:</strong></p>
+        <ul>
+          <li><strong>Redundancy &amp; Failover:</strong> Utilizing RAID storage, redundant power supplies, and secondary data centers.</li>
+          <li><strong>Load Balancing:</strong> Distributing network traffic across multiple servers to prevent overload.</li>
+          <li><strong>Disaster Recovery (DR) &amp; Backups:</strong> Regularly testing data restoration processes to ensure business operations can resume quickly after an incident.</li>
+        </ul>
+      </section>
+
+      <!-- 1.3 -->
+      <section id="sec-1-3">
+        <h2>1.3 Information Security Principles</h2>
+        <p>
+          To operationalize the CIA Triad successfully, security architects rely on fundamental design principles.
+          These principles guide the creation of secure systems and mitigate human error.
+        </p>
+
+        <h3>1. Principle of Least Privilege (PoLP)</h3>
+        <p>
+          Users, processes, and systems should only be granted the minimum levels of access—or authorizations—necessary
+          to perform their specific tasks.
+        </p>
+        <p>
+          <strong>Example:</strong> A WordPress content writer should only have an "Author" or "Editor" role, never an
+          "Administrator" role. If their account is compromised, the attacker's blast radius is limited.
+        </p>
+
+        <h3>2. Defense in Depth (Layered Security)</h3>
+        <p>
+          This principle dictates that security controls should be layered throughout an information system so that if
+          one defensive layer fails, subsequent layers are in place to stop the attacker.
+        </p>
+        <p>
+          <strong>Example:</strong> To protect database data, an enterprise doesn't just rely on a network firewall. They
+          implement network firewalls → host-based intrusion detection systems → strict OS access permissions →
+          database-level authentication → encryption of the data at rest.
+        </p>
+
+        <h3>3. Separation of Duties (SoD)</h3>
+        <p>
+          Critical tasks should be divided among multiple people to prevent fraud or major errors. No single individual
+          should have total control over an entire critical process.
+        </p>
+        <p>
+          <strong>Example:</strong> The software developer who writes code should not be the same person who approves and
+          deploys that code to the production server.
+        </p>
+
+        <h3>4. Need to Know</h3>
+        <p>
+          Even if a user has a high security clearance level, they should not have access to data unless they explicitly
+          require that information to execute a current, specific task. While Least Privilege refers to technical rights
+          and permissions, Need to Know typically refers to the data itself.
+        </p>
+
+        <h3>5. Fail-Safe Defaults (Implicit Deny)</h3>
+        <p>
+          When a system or rule fails, it should default to the most secure state possible. If an access rule is not
+          explicitly defined to allow an action, the system must automatically deny it.
+        </p>
+        <p>
+          <strong>Example:</strong> A network firewall, by default, blocks all incoming traffic unless an administrator
+          explicitly creates a rule to open a specific port.
+        </p>
+
+        <h3>6. Economy of Mechanism (Keep Security Simple)</h3>
+        <p>
+          The security mechanisms themselves should be as simple and small as possible. Complex code, intricate
+          configurations, and confusing policies lead to human error, hidden vulnerabilities, and gaps that are difficult
+          to audit.
+        </p>
+      </section>
+
+      <!-- 1.4 -->
+      <section id="sec-1-4">
+        <h2>1.4 Relationship: InfoSec vs. Cyber Security vs. Network Security</h2>
+        <p>
+          These terms are often used interchangeably in casual conversation, but they represent distinct, overlapping
+          layers of a comprehensive security taxonomy. They are best understood as <strong>nested scopes</strong>.
+        </p>
+
+        <figure class="diagram" aria-labelledby="nested-caption">
+          <svg viewBox="0 0 380 380" width="380" height="380" role="img" aria-label="Concentric circles: Network Security inside Cyber Security inside Information Security">
+            <circle cx="190" cy="190" r="170" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35"/>
+            <circle cx="190" cy="190" r="115" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"/>
+            <circle cx="190" cy="190" r="60" fill="none" stroke="currentColor" stroke-width="2" opacity="0.85"/>
+            <text x="95" y="55" font-size="13" font-weight="600" fill="currentColor">Information Security</text>
+            <text x="108" y="115" font-size="12" font-weight="600" fill="currentColor">Cyber Security</text>
+            <text x="138" y="195" font-size="11" font-weight="600" fill="currentColor">Network</text>
+            <text x="145" y="210" font-size="11" font-weight="600" fill="currentColor">Security</text>
+          </svg>
+          <figcaption id="nested-caption">Nested scopes: Network Security ⊂ Cyber Security ⊂ Information Security.</figcaption>
+        </figure>
+
+        <div class="table-wrap">
+          <table>
+            <caption>InfoSec vs. Cyber Security vs. Network Security</caption>
+            <thead>
+              <tr>
+                <th>Attribute</th>
+                <th>Information Security (InfoSec)</th>
+                <th>Cyber Security</th>
+                <th>Network Security</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Definition</strong></td>
+                <td>The overarching umbrella that protects all data, regardless of its form (digital, physical, or analog).</td>
+                <td>The practice of protecting assets that are connected to or reside within the digital/cyber realm.</td>
+                <td>A subset of cybersecurity focused on protecting network infrastructure and data in transit.</td>
+              </tr>
+              <tr>
+                <td><strong>Primary Focus</strong></td>
+                <td>Data integrity, classification, policy, compliance, and physical document security.</td>
+                <td>Cyber-attacks, malware, cloud infrastructure, web applications, and digital identities.</td>
+                <td>Firewalls, routers, switches, protocols, traffic encryption, and perimeter defense.</td>
+              </tr>
+              <tr>
+                <td><strong>Example Scenario</strong></td>
+                <td>Creating a policy on how physical paper contracts are shredded AND how databases are encrypted.</td>
+                <td>Mitigating a ransomware attack spreading across corporate laptops and cloud storage.</td>
+                <td>Configuring a VPN or an Intrusion Prevention System (IPS) to block malicious external traffic.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="sec-1-4-1">1.4.1 Types of Data</h3>
+        <p>
+          To apply these security domains effectively, data must be classified based on its sensitivity and format. Data
+          exists in three primary states, and it falls into distinct organizational categories.
+        </p>
+
+        <h4>The Three States of Data</h4>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>State</th>
+                <th>Description</th>
+                <th>Primary Protection</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Data at Rest</strong></td>
+                <td>Data stored persistently on physical or digital media (e.g., hard drives, SSDs, backup tapes, cloud storage).</td>
+                <td>AES encryption, physical access controls.</td>
+              </tr>
+              <tr>
+                <td><strong>Data in Transit (Data in Motion)</strong></td>
+                <td>Data traversing a network between systems (e.g., an HTTP request, an email traveling over the internet).</td>
+                <td>Transport Layer Security (TLS), Virtual Private Networks (VPNs).</td>
+              </tr>
+              <tr>
+                <td><strong>Data in Use</strong></td>
+                <td>Data currently loaded into system RAM, CPU cache, or registers being actively processed by an application.</td>
+                <td>Secure memory isolation, confidential computing enclaves.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <figure class="diagram" aria-labelledby="data-states-caption">
+          <svg viewBox="0 0 420 120" width="420" height="120" role="img" aria-label="Three states of data: at rest, in transit, in use">
+            <rect x="10" y="30" width="115" height="60" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="28" y="58" font-size="11" font-weight="600" fill="currentColor">Data at Rest</text>
+            <text x="22" y="75" font-size="9" fill="currentColor" opacity="0.8">Storage media</text>
+            <rect x="152" y="30" width="115" height="60" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="158" y="58" font-size="11" font-weight="600" fill="currentColor">Data in Transit</text>
+            <text x="168" y="75" font-size="9" fill="currentColor" opacity="0.8">Over networks</text>
+            <path d="M125 60 H152" stroke="currentColor" stroke-width="1" marker-end="url(#arrow)"/>
+            <rect x="294" y="30" width="115" height="60" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="312" y="58" font-size="11" font-weight="600" fill="currentColor">Data in Use</text>
+            <text x="308" y="75" font-size="9" fill="currentColor" opacity="0.8">RAM / CPU</text>
+            <path d="M267 60 H294" stroke="currentColor" stroke-width="1"/>
+            <defs>
+              <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="currentColor"/>
+              </marker>
+            </defs>
+          </svg>
+          <figcaption id="data-states-caption">The three states of data and where protections apply.</figcaption>
+        </figure>
+
+        <h4>Organizational Classification of Data</h4>
+        <ul>
+          <li>
+            <strong>Public Data:</strong> Information that can be freely shared without risk to the organization
+            (e.g., marketing brochures, public documentation).
+          </li>
+          <li>
+            <strong>Internal-Only Data:</strong> Information intended for employees that wouldn't devastate the company
+            if leaked but should remain private (e.g., internal memos, company directory).
+          </li>
+          <li>
+            <strong>Confidential / Sensitive Data:</strong> Proprietary data that, if exposed, would cause financial or
+            legal harm (e.g., source code, intellectual property, business strategies).
+          </li>
+          <li>
+            <strong>Regulated / Restricted Data:</strong> Data strictly governed by legal frameworks (e.g.,
+            <strong>PII</strong> — Personally Identifiable Information like national IDs,
+            <strong>PHI</strong> — Protected Health Information, or
+            <strong>PCI-DSS</strong> — Credit Card Data). Exposure leads to massive regulatory fines and legal consequences.
+          </li>
+        </ul>
+      </section>
+
+      <!-- 1.5 -->
+      <section id="sec-1-5">
+        <h2>1.5 Elements of Information Security</h2>
+        <p>
+          An effective Information Security program is built upon five foundational operational elements. These elements
+          ensure that an organization can actively defend its perimeter, validate identities, track actions, and maintain
+          accountability.
+        </p>
+
+        <figure class="diagram" aria-labelledby="elements-caption">
+          <svg viewBox="0 0 400 200" width="400" height="200" role="img" aria-label="Five elements: confidentiality, authentication, authorization, accountability, non-repudiation">
+            <rect x="10" y="75" width="70" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="14" y="98" font-size="9" font-weight="600" fill="currentColor">Confidentiality</text>
+            <text x="22" y="112" font-size="9" fill="currentColor">&amp; Privacy</text>
+            <rect x="90" y="75" width="70" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="98" y="105" font-size="9" font-weight="600" fill="currentColor">Authentication</text>
+            <rect x="170" y="75" width="70" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="176" y="105" font-size="9" font-weight="600" fill="currentColor">Authorization</text>
+            <rect x="250" y="75" width="70" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="258" y="105" font-size="9" font-weight="600" fill="currentColor">Accountability</text>
+            <rect x="330" y="75" width="60" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="332" y="98" font-size="8" font-weight="600" fill="currentColor">Non-</text>
+            <text x="332" y="112" font-size="8" font-weight="600" fill="currentColor">Repudiation</text>
+            <text x="120" y="40" font-size="12" font-weight="600" fill="currentColor">Elements of Information Security</text>
+          </svg>
+          <figcaption id="elements-caption">Five foundational operational elements of an information security program.</figcaption>
+        </figure>
+
+        <h3>1. Confidentiality &amp; Privacy Controls</h3>
+        <p>
+          The systematic application of tools (such as masking, tokenization, and encryption algorithms) to guarantee
+          that private data remains unreadable to anyone without the explicit cryptographic keys or access rights.
+        </p>
+
+        <h3>2. Authentication (AuthN)</h3>
+        <p>
+          The process of verifying the claimed identity of a user, device, or system. It answers the question:
+          <strong>"Who are you?"</strong>
+        </p>
+        <p><strong>The Three Factors of Authentication:</strong></p>
+        <ul>
+          <li><strong>Something you know:</strong> Passwords, PINs.</li>
+          <li><strong>Something you have:</strong> Hardware tokens, authenticator apps, smart cards.</li>
+          <li><strong>Something you are:</strong> Biometrics (fingerprints, facial recognition, retina scans).</li>
+        </ul>
+
+        <h3>3. Authorization (AuthZ)</h3>
+        <p>
+          The process of granting or denying specific privileges to an authenticated entity. It answers the question:
+          <strong>"What are you allowed to do?"</strong> Once a user proves who they are via authentication, authorization
+          checks the access matrix to see if they can read, write, or execute a specific resource.
+        </p>
+
+        <h3>4. Accountability &amp; Auditing</h3>
+        <p>
+          The mechanisms that track system activity and link actions directly to a specific user or system account. This
+          ensures that if a security incident occurs, investigators can trace exactly who initiated the action, when it
+          happened, and what assets were affected.
+        </p>
+        <p><strong>Logs:</strong> Systems must maintain immutable, tamper-resistant log files recording successful and failed login attempts, file modifications, and administrative changes.</p>
+
+        <h3>5. Non-Repudiation</h3>
+        <p>
+          A state where a sender or actor cannot deny having sent a message or performed an action, and the recipient cannot
+          deny receiving it. This is achieved through cryptographic mechanisms such as digital signatures and public-key
+          infrastructure (PKI), where a private key uniquely binds the action to an individual or system.
+        </p>
+      </section>
+
+      <!-- 1.6 -->
+      <section id="sec-1-6">
+        <h2>1.6 Deep Dive: Basic Notions of CIA</h2>
+        <p>
+          To truly understand Information Security, we must look closely at the core mechanics of the CIA Triad
+          (Confidentiality, Integrity, and Availability). These are not just abstract goals; they are operational
+          requirements that dictate how data is handled at every stage of its lifecycle.
+        </p>
+        <p>
+          Let's break down each notion deeply, exploring their specific components, real-world examples, and how they fail.
+        </p>
+
+        <h3 id="cia-confidentiality">1. Confidentiality (The Notion of Secrecy)</h3>
+        <p>
+          Confidentiality means ensuring that data is hidden from eyes that shouldn't see it. In a digital ecosystem,
+          this applies to data stored on a disk, data moving across cables, or data actively being processed in memory.
+        </p>
+
+        <h4>Core Components &amp; Tactics</h4>
+        <p><strong>Symmetric vs. Asymmetric Cryptography:</strong></p>
+        <ul>
+          <li>
+            <strong>Symmetric Encryption:</strong> Uses a single, shared secret key to both lock (encrypt) and unlock
+            (decrypt) data (e.g., AES-256). It is highly efficient for large datasets (Data at Rest).
+          </li>
+          <li>
+            <strong>Asymmetric Encryption:</strong> Uses a mathematically linked pair of keys—a Public Key (shared with
+            everyone for encryption) and a Private Key (kept secret by the owner for decryption) (e.g., RSA, ECC). This
+            solves the problem of securely exchanging keys over insecure channels.
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <strong>Data Masking &amp; Obfuscation:</strong> Replacing sensitive data structural elements with dummy data
+            (e.g., masking credit card numbers like <code>**** **** **** 1234</code> in logs or database views used by developers).
+          </li>
+          <li>
+            <strong>Steganography:</strong> The practice of concealing a file, message, image, or video within another file.
+            Unlike encryption, which makes data unreadable, steganography hides the very fact that communication is taking place.
+          </li>
+        </ul>
+
+        <h4>Real-World Example</h4>
+        <p>
+          When a user accesses an online banking portal, the browser establishes an HTTPS connection. This relies on
+          TLS (Transport Layer Security) to encrypt all traffic between the user's browser and the bank's servers. If an
+          attacker on the same local Wi-Fi network intercepts the network packets, they will only see unreadable gibberish,
+          successfully preserving confidentiality.
+        </p>
+
+        <h4>How It Fails (Breach)</h4>
+        <p>
+          A confidentiality breach occurs when an unauthorized party gains access to restricted data.
+        </p>
+        <p>
+          <strong>Scenario:</strong> An employee falls victim to a phishing email and enters their credentials into a cloned
+          login page. The attacker uses these credentials to download a database containing sensitive customer records.
+        </p>
+
+        <h3 id="cia-integrity">2. Integrity (The Notion of Trustworthiness)</h3>
+        <p>
+          Integrity means ensuring that data can be trusted. It must be accurate, complete, and exactly what the sender or
+          creator intended it to be. If data changes unexpectedly without authorization, its integrity is dead.
+        </p>
+
+        <h4>Core Components &amp; Tactics</h4>
+        <ul>
+          <li>
+            <strong>Cryptographic Hashing Functions:</strong> A hash function takes an input of any size and transforms it
+            into a fixed-size string of characters (e.g., SHA-256, MD5). Good hashing functions have an
+            <strong>Avalanche Effect</strong>—meaning if you change just one single bit or character in the input file, the
+            resulting output hash changes completely and unpredictably. Hashing is a one-way street; you cannot reverse a hash
+            back into the original data.
+          </li>
+          <li>
+            <strong>Message Authentication Codes (MAC / HMAC):</strong> A mechanism that combines a cryptographic hash
+            function with a secret key. It provides assurance that the data has not been modified and confirms that the
+            person who generated the hash possesses the correct secret key.
+          </li>
+          <li>
+            <strong>Digital Signatures:</strong> A cryptographic value calculated using the sender's Private Key and a hash
+            of the data. Anyone can use the sender's Public Key to verify the signature. This achieves two critical things:
+            <ul>
+              <li><strong>Integrity:</strong> Proves the data wasn't changed.</li>
+              <li><strong>Non-Repudiation:</strong> The sender cannot deny sending it, as only they possess the private key.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h4>Real-World Example</h4>
+        <p>
+          When downloading a Linux operating system ISO image or an open-source software package, developers often see a
+          string of text next to the download button labeled "SHA-256 Checksum". Once downloaded, the user can run a local
+          hashing tool on the file:
+        </p>
+        <pre class="code"><code>sha256sum ubuntu-desktop.iso</code></pre>
+        <p>
+          If the output string matches the hash listed on the website, the user is guaranteed that the file was not corrupted
+          during download and was not modified by a malicious middleman.
+        </p>
+
+        <h4>How It Fails (Breach)</h4>
+        <p>
+          An integrity breach occurs when data is modified by an unauthorized entity or corrupted by system faults.
+        </p>
+        <p>
+          <strong>Scenario (Man-in-the-Middle):</strong> An attacker intercepts a network packet containing an e-commerce bank
+          transfer request. They alter the destination account number inside the packet before letting it proceed to the
+          processing gateway. If the system lacks integrity checks, the funds go to the attacker's account.
+        </p>
+
+        <h3 id="cia-availability">3. Availability (The Notion of Accessibility)</h3>
+        <p>
+          Availability means that systems, networks, and data must be up and running whenever authorized users need them.
+          Security is pointless if legitimate users cannot do their work because the system is offline.
+        </p>
+
+        <h4>Core Components &amp; Tactics</h4>
+        <p><strong>Redundancy &amp; High Availability (HA):</strong> Removing single points of failure by duplicating critical infrastructure components.</p>
+        <ul>
+          <li>
+            <strong>RAID (Redundant Array of Independent Disks):</strong> Combining multiple physical hard drives so that if
+            one drive dies, data is not lost and the system keeps running.
+          </li>
+          <li>
+            <strong>Load Balancing:</strong> Deploying reverse proxies to distribute incoming web traffic evenly across an
+            array of web servers, ensuring no single server becomes overwhelmed.
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <strong>Backups &amp; Disaster Recovery (DR):</strong> Implementing strict backup rotation schemes (like the
+            <strong>3-2-1 rule</strong>: 3 copies of data, on 2 different types of media, with 1 copy stored completely off-site/cloud).
+          </li>
+          <li>
+            <strong>Capacity Planning &amp; Bandwidth Throttling:</strong> Monitoring usage trends to provision enough computational
+            power and network pipes to handle sudden, massive spikes in user traffic.
+          </li>
+        </ul>
+
+        <h4>Real-World Example</h4>
+        <p>
+          Enterprise cloud providers host web applications across multiple geographically separated data centers called
+          <strong>Availability Zones (AZs)</strong>. If an earthquake or power grid failure takes down an entire data center in
+          Zone A, automated routing protocols immediately shift all user traffic to Zone B within seconds. The end-user
+          experiences zero downtime.
+        </p>
+
+        <h4>How It Fails (Breach)</h4>
+        <p>
+          An availability breach occurs when systems become unusable or completely inaccessible to legitimate users.
+        </p>
+        <p>
+          <strong>Scenario (DDoS Attack):</strong> A botnet consisting of hundreds of thousands of compromised IoT devices
+          floods a company's web server with millions of fake, junk connection requests simultaneously. The server exhausts
+          its CPU and memory resources trying to process the fake traffic, causing it to crash and deny access to actual,
+          paying customers.
+        </p>
+      </section>
+
+      <footer class="page-footer">
+        <a href="../index.html">← Book index</a>
+        <a href="../../index.html">All books</a>
+        <a href="02-authentication-models.html">Topic 2 — Authentication Models →</a>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
