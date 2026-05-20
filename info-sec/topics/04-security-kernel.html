@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("infosec-notes-theme") !== "light") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+  <title>Topic 4 — The Security Kernel Concept</title>
+  <link rel="stylesheet" href="../../assets/css/notes.css">
+  <script src="../../assets/js/theme.js" defer></script>
+</head>
+<body>
+  <div class="page-wrapper has-toc-nav">
+    <aside class="sidebar toc" id="sidebar-nav">
+      <p class="toc-title">On this page</p>
+      <nav aria-label="Table of contents">
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#tcb-kernel-relation">TCB vs Security Kernel</a></li>
+          <li><a href="#sec-4-1">4.1 Reference Monitor</a>
+            <ul>
+              <li><a href="#refmon-properties">Three core properties</a></li>
+              <li><a href="#refmon-flow">Access decision flow</a></li>
+            </ul>
+          </li>
+          <li><a href="#sec-4-2">4.2 Monolithic vs Microkernel</a>
+            <ul>
+              <li><a href="#cpu-rings">CPU privilege rings</a></li>
+              <li><a href="#arch-comparison">Architecture comparison</a></li>
+              <li><a href="#monolithic">Monolithic kernels</a></li>
+              <li><a href="#microkernel">Microkernels</a></li>
+            </ul>
+          </li>
+          <li><a href="#sec-4-3">4.3 Key Responsibilities</a></li>
+          <li><a href="#sec-4-4">4.4 Characteristics &amp; Functions</a>
+            <ul>
+              <li><a href="#sk-isolation">1. Isolation</a></li>
+              <li><a href="#sk-access">2. Access control</a></li>
+              <li><a href="#sk-privilege">3. Privilege separation</a></li>
+              <li><a href="#sk-tcb">4. TCB integration</a></li>
+              <li><a href="#sk-verify">5. Verification</a></li>
+              <li><a href="#sk-policy">6. Policy enforcement</a></li>
+              <li><a href="#sk-tamper">7. Tamper resistance</a></li>
+              <li><a href="#sk-summary">Summary matrix</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="site-header">
+        <h1>4. The Security Kernel Concept</h1>
+        <p class="topic-meta">
+          <a href="../../index.html">← All books</a>
+          · <a href="../index.html">Book index</a>
+          · <a href="03-protection-models.html">Topic 3</a>
+        </p>
+        <div class="header-actions">
+          <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="sidebar-nav" aria-label="Open page navigation">
+            <span class="nav-toggle-icon" aria-hidden="true">
+              <span class="nav-toggle-bar"></span>
+              <span class="nav-toggle-bar"></span>
+              <span class="nav-toggle-bar"></span>
+            </span>
+            <span class="nav-toggle-label">Menu</span>
+          </button>
+          <button type="button" class="theme-toggle" aria-pressed="false">
+            <span class="theme-toggle-label">Dark mode</span>
+          </button>
+        </div>
+      </header>
+
+      <section id="overview">
+        <p>
+          In high-assurance computer security architecture, a <strong>Security Kernel</strong> is the hardware, firmware,
+          and software elements of a Trusted Computing Base (TCB) that implement the central security core of an operating
+          system. Its primary responsibility is to isolate processes and enforce access control policies across the entire machine.
+        </p>
+        <p>
+          The security kernel acts as the mathematical and logical engine that makes sure protection models (like MAC,
+          Bell-LaPadula, or Biba) are actively working in real-time, preventing unauthorized software loops from bypassing
+          system rules.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <caption>Quick reference — key terms</caption>
+            <thead>
+              <tr><th>Term</th><th>Role</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Reference Monitor</strong></td><td>Abstract design requirement — mediates every access</td></tr>
+              <tr><td><strong>Security Kernel</strong></td><td>Concrete OS implementation of the reference monitor</td></tr>
+              <tr><td><strong>TCB</strong></td><td>All components that must be trusted for security to hold</td></tr>
+              <tr><td><strong>Ring 0</strong></td><td>Most privileged CPU mode — kernel / security kernel runs here</td></tr>
+              <tr><td><strong>Ring 3</strong></td><td>User mode — applications and (in microkernels) many drivers</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="tcb-kernel-relation">
+        <h2>TCB vs Security Kernel (Related Concept)</h2>
+        <p>
+          From <a href="03-protection-models.html#sec-tcb">Topic 3 — Trusted Computing Base</a>: the TCB is everything required
+          to enforce policy. The <strong>security kernel</strong> is the active software core inside that base.
+        </p>
+        <figure class="diagram diagram-lg" aria-labelledby="tcb-kernel-caption">
+          <svg viewBox="0 0 420 260" width="420" height="260" role="img" aria-label="TCB contains security kernel at its center">
+            <rect x="30" y="20" width="360" height="220" rx="8" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+            <text x="155" y="42" font-size="12" font-weight="600" fill="currentColor">Trusted Computing Base (TCB)</text>
+            <rect x="55" y="55" width="130" height="45" rx="4" fill="none" stroke="currentColor" stroke-width="1"/>
+            <text x="72" y="75" font-size="9" fill="currentColor">Hardware (CPU, MMU)</text>
+            <text x="68" y="90" font-size="9" fill="currentColor">Firmware (BIOS/UEFI)</text>
+            <rect x="210" y="55" width="130" height="45" rx="4" fill="none" stroke="currentColor" stroke-width="1"/>
+            <text x="228" y="75" font-size="9" fill="currentColor">Config &amp; utilities</text>
+            <text x="235" y="90" font-size="9" fill="currentColor">Boot chain</text>
+            <rect x="120" y="120" width="180" height="70" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="148" y="148" font-size="11" font-weight="700" fill="currentColor">Security Kernel</text>
+            <text x="132" y="168" font-size="9" fill="currentColor">Reference Monitor engine</text>
+            <text x="138" y="182" font-size="9" fill="currentColor">Policy enforcement</text>
+            <rect x="55" y="205" width="310" height="25" rx="4" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+            <text x="130" y="222" font-size="9" fill="currentColor">Untrusted: apps, third-party code (outside TCB)</text>
+          </svg>
+          <figcaption id="tcb-kernel-caption">The security kernel sits at the heart of the TCB; compromise of the kernel breaks the whole system.</figcaption>
+        </figure>
+      </section>
+
+      <section id="sec-4-1">
+        <h2>4.1 The Reference Monitor Concept</h2>
+        <p>
+          To understand the security kernel, you must first understand the <strong>Reference Monitor</strong>. The Reference
+          Monitor is an abstract, mathematical concept or design requirement. The Security Kernel is the actual, concrete
+          implementation of that abstract concept in code and hardware.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <caption>Abstract concept vs concrete implementation</caption>
+            <thead>
+              <tr><th>Aspect</th><th>Reference Monitor</th><th>Security Kernel</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nature</td><td>Design requirement / ideal</td><td>Running code in Ring 0</td></tr>
+              <tr><td>Visibility</td><td>Logical model</td><td>Linux kernel, SELinux module, Windows kernel</td></tr>
+              <tr><td>Must satisfy</td><td>Complete mediation, isolation, verifiability</td><td>Same — proven by audit or formal methods</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          The Reference Monitor sits directly between <strong>subjects</strong> (users, active processes) and
+          <strong>objects</strong> (files, hardware devices, memory space). Every single time a subject requests an access
+          right (Read, Write, Execute) on an object, the system intercepts the request and routes it through the Reference
+          Monitor to validate permission.
+        </p>
+
+        <h3 id="refmon-properties">The Three Core Properties of a Reference Monitor</h3>
+        <div class="table-wrap">
+          <table>
+            <caption>Reference Monitor design principles</caption>
+            <thead>
+              <tr><th>Property</th><th>Also called</th><th>Requirement</th><th>Failure if violated</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Complete Mediation</strong></td>
+                <td>Tamper-resistant</td>
+                <td>Every access attempt is intercepted — no bypass paths</td>
+                <td>Direct memory/hardware access bypasses policy</td>
+              </tr>
+              <tr>
+                <td><strong>Isolation</strong></td>
+                <td>Always invocable</td>
+                <td>Monitor code protected in Ring 0; cannot be modified by users</td>
+                <td>Malware patches the kernel or disables checks</td>
+              </tr>
+              <tr>
+                <td><strong>Verifiability</strong></td>
+                <td>Small &amp; simple</td>
+                <td>Code small enough to audit or formally prove correct</td>
+                <td>Hidden bugs, backdoors, unanalyzed complexity</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="refmon-flow">Access Decision Flow (System Call Path)</h3>
+        <figure class="diagram diagram-lg" aria-labelledby="syscall-flow-caption">
+          <svg viewBox="0 0 480 320" width="480" height="320" role="img" aria-label="System call flow through reference monitor">
+            <rect x="40" y="20" width="120" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="68" y="45" font-size="10" font-weight="600" fill="currentColor">User Process</text>
+            <text x="55" y="58" font-size="8" fill="currentColor">(Ring 3 Subject)</text>
+            <path d="M100 60 L100 85" stroke="currentColor" stroke-width="1" marker-end="url(#a4)"/>
+            <text x="108" y="78" font-size="8" fill="currentColor">syscall</text>
+            <rect x="60" y="90" width="160" height="35" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="85" y="112" font-size="9" font-weight="600" fill="currentColor">Trap to Kernel (Ring 0)</text>
+            <path d="M140 125 L140 150" stroke="currentColor" stroke-width="1" marker-end="url(#a4)"/>
+            <rect x="50" y="155" width="180" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="88" y="178" font-size="10" font-weight="700" fill="currentColor">Reference Monitor</text>
+            <text x="72" y="195" font-size="8" fill="currentColor">ACL / MAC / labels check</text>
+            <path d="M140 205 L140 230" stroke="currentColor" stroke-width="1"/>
+            <rect x="70" y="232" width="70" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1"/>
+            <text x="88" y="250" font-size="9" fill="currentColor">GRANT</text>
+            <rect x="150" y="232" width="70" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1"/>
+            <text x="168" y="250" font-size="9" fill="currentColor">DENY</text>
+            <path d="M105 260 L105 285" stroke="currentColor" stroke-width="1" stroke-dasharray="3 2"/>
+            <rect x="280" y="155" width="160" height="45" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="320" y="175" font-size="10" font-weight="600" fill="currentColor">Object</text>
+            <text x="305" y="190" font-size="8" fill="currentColor">file, device, memory</text>
+            <path d="M230 180 L280 180" stroke="currentColor" stroke-width="1" marker-end="url(#a4)"/>
+            <text x="235" y="172" font-size="8" fill="currentColor">if granted</text>
+            <rect x="280" y="55" width="160" height="70" rx="4" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+            <text x="310" y="80" font-size="9" fill="currentColor">Audit log</text>
+            <text x="295" y="95" font-size="8" fill="currentColor">(append-only,</text>
+            <text x="300" y="108" font-size="8" fill="currentColor">Ring 3 cannot erase)</text>
+            <path d="M230 175 L280 100" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+            <defs>
+              <marker id="a4" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="currentColor"/>
+              </marker>
+            </defs>
+          </svg>
+          <figcaption id="syscall-flow-caption">Typical path: user request → kernel trap → reference monitor decision → object access or denial + audit.</figcaption>
+        </figure>
+      </section>
+
+      <section id="sec-4-2">
+        <h2>4.2 Security Kernel Architecture: Monolithic vs. Microkernel</h2>
+        <p>
+          How an operating system designs its core kernel fundamentally alters its security posture and attack surface. The two
+          main architectural styles handle isolation differently.
+        </p>
+
+        <h3 id="cpu-rings">CPU Privilege Rings (x86 Model)</h3>
+        <figure class="diagram diagram-lg" aria-labelledby="rings-caption">
+          <svg viewBox="0 0 400 240" width="400" height="240" role="img" aria-label="CPU rings 0 through 3">
+            <rect x="80" y="25" width="240" height="35" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="165" y="47" font-size="11" font-weight="700" fill="currentColor">Ring 0 — Kernel</text>
+            <rect x="100" y="70" width="200" height="30" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="175" y="90" font-size="10" fill="currentColor">Ring 1 (rare)</text>
+            <rect x="120" y="110" width="160" height="30" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="175" y="130" font-size="10" fill="currentColor">Ring 2 (rare)</text>
+            <rect x="140" y="150" width="120" height="35" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="168" y="172" font-size="11" font-weight="600" fill="currentColor">Ring 3 — User</text>
+            <text x="50" y="100" font-size="9" fill="currentColor" opacity="0.8">More privilege ▲</text>
+            <text x="50" y="185" font-size="9" fill="currentColor" opacity="0.8">Less privilege ▼</text>
+          </svg>
+          <figcaption id="rings-caption">Lower ring number = higher privilege. Security kernel must run at the highest privilege (Ring 0).</figcaption>
+        </figure>
+
+        <h3 id="arch-comparison">Architecture Comparison Table</h3>
+        <div class="table-wrap">
+          <table>
+            <caption>Monolithic vs microkernel — security and performance</caption>
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>Monolithic Kernel</th>
+                <th>Microkernel</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Ring 0 size</strong></td><td>Very large (drivers, FS, network, scheduler)</td><td>Minimal (IPC, memory, scheduler core)</td></tr>
+              <tr><td><strong>Drivers location</strong></td><td>Inside kernel (Ring 0)</td><td>User-space services (Ring 3)</td></tr>
+              <tr><td><strong>Attack surface</strong></td><td>High — one driver bug can own the OS</td><td>Lower — driver crash isolated &amp; restarted</td></tr>
+              <tr><td><strong>Performance</strong></td><td>Fast — shared memory, few IPC copies</td><td>Slower — context switches &amp; message passing</td></tr>
+              <tr><td><strong>Verifiability</strong></td><td>Hard — millions of lines in TCB</td><td>Easier — tiny kernel (e.g. seL4 formally verified)</td></tr>
+              <tr><td><strong>Examples</strong></td><td>Linux, Windows NT, Android</td><td>seL4, QNX, Mach (macOS XNU)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <figure class="diagram diagram-lg" aria-labelledby="arch-side-caption">
+          <svg viewBox="0 0 520 200" width="520" height="200" role="img" aria-label="Side by side monolithic and microkernel">
+            <text x="95" y="18" font-size="11" font-weight="600" fill="currentColor">Monolithic</text>
+            <rect x="20" y="28" width="200" height="45" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="35" y="48" font-size="8" fill="currentColor">Ring 0: VFS, Net, Drivers, Sec</text>
+            <text x="35" y="62" font-size="8" fill="currentColor">ALL in one privileged block</text>
+            <rect x="20" y="85" width="200" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="55" y="110" font-size="9" fill="currentColor">Ring 3: Applications</text>
+            <text x="330" y="18" font-size="11" font-weight="600" fill="currentColor">Microkernel</text>
+            <rect x="300" y="28" width="200" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="315" y="46" font-size="8" fill="currentColor">Ring 0: IPC, MM, tiny Sec core</text>
+            <rect x="300" y="62" width="95" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1"/>
+            <text x="318" y="80" font-size="7" fill="currentColor">Driver svc</text>
+            <rect x="405" y="62" width="95" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1"/>
+            <text x="425" y="80" font-size="7" fill="currentColor">FS svc</text>
+            <rect x="300" y="98" width="200" height="27" rx="3" fill="none" stroke="currentColor" stroke-width="1"/>
+            <text x="330" y="115" font-size="7" fill="currentColor">Network svc · Apps</text>
+            <text x="110" y="145" font-size="8" fill="currentColor" opacity="0.85">▲ Syscall boundary</text>
+            <line x1="20" y1="140" x2="500" y2="140" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+          </svg>
+          <figcaption id="arch-side-caption">Monolithic: large Ring 0. Microkernel: minimal Ring 0, services isolated in Ring 3.</figcaption>
+        </figure>
+
+        <h3 id="monolithic">1. Monolithic Kernels</h3>
+        <pre class="diagram-flow">┌────────────────────────────────────────────────────────┐
+│ Ring 0 (Kernel): VFS, IPC, Network, Drivers, Sec Core  │
+└────────────────────────────────────────────────────────┘
+                           ▲ (Syscall)
+┌────────────────────────────────────────────────────────┐
+│ Ring 3 (User): Applications, Browsers, Dev Tools       │
+└────────────────────────────────────────────────────────┘</pre>
+        <p>
+          In a monolithic design, the security kernel is woven directly into a massive, single operating system file that handles
+          everything. The entire OS core runs inside the highly privileged Ring 0.
+        </p>
+        <p><strong>What resides in Ring 0:</strong> File systems (VFS), network stacks, process schedulers, memory managers, virtual memory controllers, and thousands of third-party hardware device drivers.</p>
+        <p><strong>Examples:</strong> Standard Linux (including Ubuntu), Android, and Windows NT.</p>
+        <p><strong>Security Payload:</strong></p>
+        <ul>
+          <li><strong>Pros:</strong> Extremely fast performance because components can share memory directly without complex message-passing bottlenecks.</li>
+          <li><strong>Cons:</strong> Massive Attack Surface. Because everything runs in Ring 0, if a single third-party printer driver or network card driver has a buffer overflow vulnerability, an attacker can exploit it to completely compromise the entire operating system. The security kernel's isolation properties are highly vulnerable to adjacent code flaws.</li>
+        </ul>
+
+        <h3 id="microkernel">2. Microkernels</h3>
+        <pre class="diagram-flow">┌────────────────────────────────────────────────────────┐
+│ Ring 0 (Kernel): IPC, Basic Memory, Minimal Sec Core   │
+├────────────────────────────────────────────────────────┤
+│ Ring 3 (User): VFS, Device Drivers, Apps, Networks     │
+└────────────────────────────────────────────────────────┘</pre>
+        <p>
+          A microkernel architecture strips out almost everything from Ring 0, reducing the core kernel down to the absolute bare
+          minimum components required to run a machine safely.
+        </p>
+        <p><strong>What resides in Ring 0:</strong> Basic memory allocation, low-level process thread scheduling, and Inter-Process Communication (IPC) mechanisms.</p>
+        <p><strong>What is pushed to Ring 3 (User Space):</strong> File systems, device drivers, network protocols, and user applications run as isolated, low-privilege services.</p>
+        <p><strong>Examples:</strong> seL4 (Secure Embedded L4), QNX (used in automotive computing), and Apple's Mach component within the XNU kernel.</p>
+        <p><strong>Security Payload:</strong></p>
+        <ul>
+          <li>
+            <strong>Pros:</strong> Exceptional Isolation. If a network driver crashes or gets hacked in a microkernel architecture, it happens in Ring 3. The OS simply restarts that single isolated driver process without dropping the machine. The security kernel remains completely safe, satisfying the Verifiability property perfectly. (In fact, the seL4 microkernel is the world's first OS kernel to be mathematically proven bug-free via formal verification).
+          </li>
+          <li><strong>Cons:</strong> Slower performance overhead due to constant context-switching and IPC message copying between isolated user-space modules.</li>
+        </ul>
+
+        <div class="callout exam">
+          <div class="callout-title">Exam tip — driver compromise</div>
+          <p><strong>Monolithic:</strong> bad driver = full kernel compromise. <strong>Microkernel:</strong> bad driver = restart that service only; security kernel stays intact.</p>
+        </div>
+      </section>
+
+      <section id="sec-4-3">
+        <h2>4.3 Key Responsibilities of the Security Kernel</h2>
+        <p>An operational security kernel continuously executes four low-level system administration tasks:</p>
+        <div class="table-wrap">
+          <table>
+            <caption>Four core responsibilities of the security kernel</caption>
+            <thead>
+              <tr><th>#</th><th>Responsibility</th><th>Mechanism</th><th>Example</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td><strong>Hardware &amp; process isolation</strong></td>
+                <td>MMU, virtual address spaces per process</td>
+                <td>Process A cannot read Process B's memory</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><strong>Enforcing execution rings</strong></td>
+                <td>System calls, privilege level checks on trap</td>
+                <td>App cannot touch hardware without kernel gate</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><strong>Access rule enforcement</strong></td>
+                <td>MAC labels, ACLs on every I/O request</td>
+                <td>SELinux denies write to classified file</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><strong>Secure logging &amp; auditing</strong></td>
+                <td>Append-only protected audit store</td>
+                <td>Failed logins logged; user cannot delete logs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="sec-4-4">
+        <h2>4.4 Characteristics and Core Functions of a Security Kernel</h2>
+        <p>
+          To implement a fully operational Reference Monitor, a security kernel must exhibit specific core characteristics and
+          perform structural functions. These properties ensure that the kernel remains unbreakable, verifiable, and capable of
+          maintaining control over the system under all operational conditions.
+        </p>
+
+        <h3 id="sk-isolation">1. Isolation (Process and Resource Separation)</h3>
+        <p>Isolation is both a core characteristic and a primary function of the security kernel. The kernel utilizes physical hardware features—such as the Memory Management Unit (MMU)—to enforce strict boundaries within the system.</p>
+        <p><strong>How it works:</strong> The security kernel maps separate, isolated virtual memory spaces for every running process. Process A cannot see, read, or overwrite the memory addresses allocated to Process B.</p>
+        <p><strong>The Security Impact:</strong> If a user application or device driver is compromised by malware or suffers a memory corruption bug (like a buffer overflow), the damage is completely contained within that specific process boundary. It cannot cross over to infect other applications or access unauthorized hardware assets.</p>
+
+        <h3 id="sk-access">2. Access Control (Mediation of Requests)</h3>
+        <p>The security kernel serves as the ultimate gatekeeper for all internal communications. It ensures that no subject can directly touch an asset without an explicit check.</p>
+        <p><strong>How it works:</strong> It enforces the Complete Mediation property of the Reference Monitor. When a process attempts an action (e.g., a text editor trying to read <code>sensitive_data.txt</code>), the kernel halts the request, matches the process's security token against the object's Access Control List (ACL) or classification label, and explicitly grants or denies access.</p>
+        <p><strong>The Security Impact:</strong> Because this mediation happens at the lowest software-to-hardware interface layer, it guarantees that no user-space application can trick the file system or bypass organizational security policies.</p>
+
+        <h3 id="sk-privilege">3. Privilege Separation</h3>
+        <figure class="diagram" aria-labelledby="priv-sep-caption">
+          <svg viewBox="0 0 400 140" width="400" height="140" role="img" aria-label="Privilege separation between worker and master process">
+            <rect x="30" y="30" width="140" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="55" y="52" font-size="9" font-weight="600" fill="currentColor">Low-priv worker</text>
+            <text x="45" y="68" font-size="8" fill="currentColor">(handles network input)</text>
+            <rect x="230" y="30" width="140" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="255" y="52" font-size="9" font-weight="600" fill="currentColor">High-priv master</text>
+            <text x="248" y="68" font-size="8" fill="currentColor">(writes files only)</text>
+            <path d="M170 55 L230 55" stroke="currentColor" stroke-width="1" stroke-dasharray="4 2"/>
+            <text x="175" y="48" font-size="8" fill="currentColor">IPC only</text>
+            <text x="120" y="105" font-size="8" fill="currentColor" opacity="0.8">Attacker compromising worker ≠ full system access</text>
+          </svg>
+          <figcaption id="priv-sep-caption">Privilege separation limits blast radius when an untrusted component is exploited.</figcaption>
+        </figure>
+        <p>Privilege separation divides a system or application into distinct, isolated modules, each running with the absolute minimum privileges required to execute its specific task.</p>
+        <p><strong>How it works:</strong> Instead of running a massive program as a single root/administrator process, the security kernel forces the application to split into smaller components. A low-privilege worker process handles untrusted inputs (like network traffic), while a small, highly audited high-privilege master process handles sensitive tasks (like writing to a file).</p>
+        <p><strong>The Security Impact:</strong> If an attacker exploits a vulnerability in the network-facing module, they only inherit the rights of that low-privilege process. They are blocked from taking over the entire machine because they cannot easily bridge the gap to the privileged master process.</p>
+
+        <h3 id="sk-tcb">4. Integration with the Trusted Computing Base (TCB)</h3>
+        <p>The Security Kernel represents the heart and most critical component of the Trusted Computing Base (TCB).</p>
+        <ul>
+          <li><strong>The Relationship:</strong> The TCB includes everything required to enforce security—including physical hardware chips, motherboard firmware (BIOS/UEFI), configuration files, and system utilities. The security kernel is the software engine that actively orchestrates and drives these TCB components to ensure they behave securely.</li>
+          <li><strong>The Architecture Rule:</strong> The security kernel must be designed with minimal complexity to ensure the overall TCB size remains small, making it easier to lock down and protect from configuration drift.</li>
+        </ul>
+
+        <h3 id="sk-verify">5. Verification and Assurance</h3>
+        <figure class="diagram diagram-lg" aria-labelledby="verify-caption">
+          <svg viewBox="0 0 440 120" width="440" height="120" role="img" aria-label="Formal verification pipeline">
+            <rect x="15" y="40" width="75" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="28" y="58" font-size="8" fill="currentColor">Source</text>
+            <text x="22" y="72" font-size="8" fill="currentColor">code</text>
+            <path d="M90 60 H115" stroke="currentColor" stroke-width="1" marker-end="url(#a4b)"/>
+            <rect x="115" y="40" width="85" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="125" y="58" font-size="8" fill="currentColor">Formal</text>
+            <text x="128" y="72" font-size="8" fill="currentColor">model</text>
+            <path d="M200 60 H225" stroke="currentColor" stroke-width="1" marker-end="url(#a4b)"/>
+            <rect x="225" y="40" width="85" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="238" y="58" font-size="8" fill="currentColor">Proof</text>
+            <text x="232" y="72" font-size="8" fill="currentColor">tools</text>
+            <path d="M310 60 H335" stroke="currentColor" stroke-width="1" marker-end="url(#a4b)"/>
+            <rect x="335" y="40" width="90" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="348" y="58" font-size="8" font-weight="600" fill="currentColor">Verified</text>
+            <text x="352" y="72" font-size="8" fill="currentColor">kernel</text>
+            <text x="120" y="25" font-size="9" fill="currentColor" opacity="0.85">e.g. seL4 — mathematically proven correct</text>
+            <defs>
+              <marker id="a4b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="currentColor"/>
+              </marker>
+            </defs>
+          </svg>
+          <figcaption id="verify-caption">Formal verification: prove correctness mathematically instead of only testing samples.</figcaption>
+        </figure>
+        <p>Assurance is the measure of confidence that a security system will behave exactly as intended, free from hidden vulnerabilities, logical bugs, or intentional backdoors.</p>
+        <p><strong>How it works:</strong> Because a secure kernel is kept intentionally small and structurally clean, it can undergo rigorous <strong>Formal Verification</strong>. This is a mathematical approach where specialized software tools analyze every single line of code against a set of mathematical proofs to verify its logical correctness.</p>
+        <p><strong>The Security Impact:</strong> This moves security from a state of "testing for bugs" to "mathematically proving the absence of bugs," providing the highest level of assurance needed for military, aerospace, and critical infrastructure environments.</p>
+
+        <h3 id="sk-policy">6. Security Policy Enforcement</h3>
+        <p>A security policy defines the organizational rules for data protection (e.g., "Clerks cannot view financial summaries"). The security kernel transforms these abstract human rules into strict computer code enforcement.</p>
+        <p><strong>How it works:</strong> Whether an organization chooses a Mandatory Access Control (MAC) model, a Bell-LaPadula confidentiality model, or an attribute-based system, the kernel serves as the mechanism that computes and applies those rules on every input/output request across the CPU.</p>
+        <div class="table-wrap">
+          <table>
+            <caption>Protection models enforced by the kernel (see Topic 3)</caption>
+            <thead>
+              <tr><th>Model</th><th>Kernel enforces</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>MAC / Bell-LaPadula</td><td>Clearance vs classification on read/write</td></tr>
+              <tr><td>Biba</td><td>Integrity levels — no read down, no write up</td></tr>
+              <tr><td>DAC / ACL</td><td>Owner-defined permissions per object</td></tr>
+              <tr><td>SELinux</td><td>MAC policies on Linux — kernel LSM hooks</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="sk-tamper">7. Tamper Resistance</h3>
+        <p>A security tool is useless if an attacker can simply reach into memory and turn it off. Tamper resistance ensures that the security kernel can defend itself from active attacks.</p>
+        <p><strong>How it works:</strong> By operating inside the CPU's Ring 0 (Kernel Mode), the security kernel protects its own code execution paths, cryptographic keys, and rule matrices from user-space modification. A standard user process—even one running with local admin rights—is physically blocked by the hardware from writing data directly into memory addresses owned by the security kernel.</p>
+
+        <h3 id="sk-summary">Summary Matrix — All Seven Characteristics</h3>
+        <div class="table-wrap">
+          <table>
+            <caption>Security kernel characteristics at a glance</caption>
+            <thead>
+              <tr><th>#</th><th>Characteristic</th><th>Primary goal</th><th>Key mechanism</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Isolation</td><td>Contain failures</td><td>MMU, separate address spaces</td></tr>
+              <tr><td>2</td><td>Access control</td><td>Authorize every action</td><td>Reference monitor on syscall</td></tr>
+              <tr><td>3</td><td>Privilege separation</td><td>Limit blast radius</td><td>Split trusted / untrusted components</td></tr>
+              <tr><td>4</td><td>TCB integration</td><td>Orchestrate trust base</td><td>Minimal kernel, firmware + HW</td></tr>
+              <tr><td>5</td><td>Verification</td><td>Prove correctness</td><td>Formal methods (seL4)</td></tr>
+              <tr><td>6</td><td>Policy enforcement</td><td>Apply org rules</td><td>MAC, BLP, Biba in kernel</td></tr>
+              <tr><td>7</td><td>Tamper resistance</td><td>Self-protection</td><td>Ring 0 + hardware memory protection</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer class="page-footer">
+        <a href="03-protection-models.html">← Topic 3</a>
+        <a href="../index.html">Book index</a>
+        <a href="../../index.html">All books</a>
+        <span>Topic 5 — coming soon</span>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

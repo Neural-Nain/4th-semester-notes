@@ -355,6 +355,24 @@ tr:last-child td {
   height: auto;
 }
 
+.diagram.diagram-lg {
+  padding: 1.75rem 1rem;
+}
+
+.diagram.diagram-lg svg {
+  min-width: 100%;
+}
+
+h3 {
+  scroll-margin-top: 1rem;
+}
+
+h4 {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 1rem;
+  color: var(--heading);
+}
+
 /* Sections */
 section {
   margin-bottom: 0.5rem;
@@ -363,55 +381,65 @@ section {
 /* Master library index */
 .master-index .book-cards {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 1.25rem;
   margin: 1.5rem 0 2rem;
 }
 
 .book-card {
-  display: block;
-  padding: 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.15rem 1.35rem;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
 }
 
 .book-card.available:hover {
   border-color: var(--accent);
   box-shadow: var(--shadow);
+  transform: translateY(-2px);
   text-decoration: none;
   color: inherit;
 }
 
 .book-card h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.35rem;
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.3;
   color: var(--heading);
 }
 
 .book-card p {
-  margin: 0 0 0.75rem;
-  font-size: 0.95rem;
-  color: var(--text);
-  line-height: 1.55;
-}
-
-.book-meta {
-  font-size: 0.85rem !important;
-  color: var(--text-muted) !important;
-}
-
-.book-topics-preview {
-  margin: 0.75rem 0 0;
-  padding-left: 1.25rem;
-  font-size: 0.9rem;
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
   color: var(--text-muted);
 }
 
-.book-topics-preview li {
-  margin-bottom: 0.25rem;
+.book-meta {
+  font-size: 0.8rem !important;
+}
+
+.book-summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-stats {
+  margin-top: 0.15rem !important;
+  font-size: 0.8rem !important;
+  color: var(--text-muted) !important;
+}
+
+.book-card .badge {
+  margin-bottom: 0.35rem;
 }
 
 .master-help {
@@ -583,8 +611,20 @@ section {
 }
 
 @media (max-width: 640px) {
-  .topic-cards {
+  .topic-cards,
+  .master-index .book-cards {
     grid-template-columns: 1fr;
+  }
+
+  .book-card .badge {
+    font-size: 0.7rem;
+    padding: 0.28rem 0.6rem 0.28rem 0.48rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .book-card .badge.ready::before {
+    width: 0.4rem;
+    height: 0.4rem;
   }
 }
 
