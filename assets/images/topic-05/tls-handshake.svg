@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" role="img" aria-label="HTTPS TLS hybrid handshake">
+  <text x="20" y="22" font-size="12" font-weight="600" fill="#3d4a5c">HTTPS  hybrid cryptography</text>
+  <rect x="40" y="40" width="100" height="40" rx="5" fill="none" stroke="#3d4a5c" stroke-width="1.5"/>
+  <text x="62" y="64" font-size="10" fill="#3d4a5c">Browser</text>
+  <rect x="580" y="40" width="100" height="40" rx="5" fill="none" stroke="#3d4a5c" stroke-width="1.5"/>
+  <text x="608" y="64" font-size="10" fill="#3d4a5c">Server</text>
+  <text x="200" y="55" font-size="9" font-weight="600" fill="#3d4a5c">Phase 1  Asymmetric handshake</text>
+  <path d="M140 70 H200" stroke="#3d4a5c" stroke-width="1"/><text x="145" y="66" font-size="8" fill="#3d4a5c">` cert + public key</text>
+  <path d="M580 85 H520" stroke="#3d4a5c" stroke-width="1"/><text x="430" y="90" font-size="8" fill="#3d4a5c">a DH/RSA ’ session key</text>
+  <rect x="180" y="110" width="360" height="50" rx="6" fill="none" stroke="#3d4a5c" stroke-width="1.5"/>
+  <text x="200" y="132" font-size="9" fill="#3d4a5c">Negotiated symmetric session key (AES-GCM / ChaCha20)</text>
+  <text x="200" y="148" font-size="8" fill="#3d4a5c" opacity="0.8">Certificate Authority verifies server identity</text>
+  <text x="200" y="185" font-size="9" font-weight="600" fill="#3d4a5c">Phase 2  Symmetric bulk encryption</text>
+  <path d="M140 210 H580" stroke="#3d4a5c" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="260" y="205" font-size="8" fill="#3d4a5c">All HTTP traffic encrypted with session key (fast)</text>
+  <text x="20" y="250" font-size="8" fill="#3d4a5c" opacity="0.85">Asymmetric = key exchange &amp; auth · Symmetric = high-speed data phase (Section 5.13)</text>
+</svg>
