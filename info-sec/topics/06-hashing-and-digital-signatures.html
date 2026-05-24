@@ -76,9 +76,13 @@
           <li><a href="#sec-6-6">6.6</a> RSA, DSA, ECDSA implementations</li>
           <li><a href="#sec-6-7">6.7</a> Summary matrix — hash vs HMAC vs signature</li>
           <li><a href="#sec-6-8">6.8</a> OpenSSL hands-on · <a href="#sec-6-9">6.9</a> Password hashing</li>
-          <li><a href="#sec-6-10">6.10</a> Digital signatures — components, assurances, applications</li>
-          <li><a href="#sec-6-11">6.11</a> Digital certificates (CA, X.509)</li>
-          <li><a href="#sec-6-12">6.12</a> Hashing vs encryption vs encoding</li>
+          <li>GfG depth (after labs):
+            <ol>
+              <li><a href="#sec-6-10">6.10</a> Digital signatures — components, assurances, applications</li>
+              <li><a href="#sec-6-11">6.11</a> Digital certificates (CA, X.509)</li>
+              <li><a href="#sec-6-12">6.12</a> Hashing vs encryption vs encoding</li>
+            </ol>
+          </li>
         </ol>
         <p class="topic-meta">Prerequisite skim: <a href="05-advanced-cryptography.html#sec-5-11">Topic 5 §5.11</a> (hash intro with diagrams).</p>
       </div>
@@ -92,6 +96,8 @@
           <a href="05-advanced-cryptography.html#sec-5-11">Topic 5 — Section 5.11</a>. Here you get the full operational architecture,
           mathematical foundations, birthday-paradox analysis, enterprise comparison matrix, hands-on commands,
           <strong>digital certificates</strong>, and a full comparison of <strong>hashing vs encryption vs encoding</strong>.
+          Signatures and certificates underpin audit evidence and non-repudiation in
+          <a href="07-security-auditing.html">Topic 7 — Security Auditing</a>.
         </p>
       </section>
 
@@ -391,6 +397,12 @@ HMAC Architecture:  [Plaintext Message] ──┐
         <div class="callout exam">
           <div class="callout-title">Exam tip — pick the right tool</div>
           <p><strong>Hash</strong> = integrity only. <strong>HMAC</strong> = integrity + shared-secret authenticity. <strong>Digital signature</strong> = integrity + identity + non-repudiation.</p>
+          <ul>
+            <li>Need a public fingerprint anyone can recompute? → <strong>Hash</strong> (e.g. file checksum, password verifier with salt).</li>
+            <li>Two parties share a secret and you need API/webhook authenticity? → <strong>HMAC</strong>.</li>
+            <li>Prove who signed and prevent denial later? → <strong>Digital signature</strong> (+ often a certificate for identity).</li>
+            <li>Need reversible transport-safe text (not secrecy)? → <strong>Encoding</strong> (Base64, URL) — see <a href="#sec-6-12">§6.12</a>.</li>
+          </ul>
         </div>
       </section>
 
@@ -597,6 +609,11 @@ Receiver → Decrypt with Public Key → Compare Hashes → Verify</pre>
           Digital certificates enable secure communication by establishing trust between communicating parties.
         </p>
 
+        <div class="callout exam">
+          <div class="callout-title">Exam tip — X.509 trust chain</div>
+          <p>A typical TLS chain is <strong>root CA</strong> → <strong>intermediate CA</strong> → <strong>leaf certificate</strong> (your server). The root is trusted via a store in the OS/browser; each link is signed by the parent. <code>openssl verify</code> walks the chain and checks signatures, validity dates, and purpose (e.g. serverAuth). A signature alone proves message integrity; a <em>certificate</em> binds a name to a public key so clients know whose key they are using.</p>
+        </div>
+
         <h3>Contents of a Digital Certificate</h3>
         <p>A digital certificate typically includes:</p>
         <ul>
@@ -668,6 +685,10 @@ Receiver → Decrypt with Public Key → Compare Hashes → Verify</pre>
 
       <section id="sec-6-12">
         <h2>6.12 Difference Between Hashing, Encryption, and Encoding</h2>
+        <div class="callout canonical">
+          <div class="callout-title">Related — hash operational depth</div>
+          <p>One-way hash architecture (MD5 → SHA-3, properties, birthday paradox): <a href="#sec-6-1">§6.1 Cryptographic Hash Functions</a>.</p>
+        </div>
         <p>
           Encryption, hashing, and encoding are three different methods of transforming data, each serving a unique purpose. While encryption protects confidentiality, hashing ensures integrity, and encoding focuses on safe data representation.
         </p>
@@ -798,7 +819,7 @@ Receiver → Decrypt with Public Key → Compare Hashes → Verify</pre>
         <a href="05-advanced-cryptography.html">← Topic 5</a>
         <a href="../index.html">Book index</a>
         <a href="../../index.html">All books</a>
-        <span>Topic 7 — coming soon</span>
+        <a href="07-security-auditing.html">Topic 7 — Security Auditing →</a>
       </footer>
     </main>
   </div>
