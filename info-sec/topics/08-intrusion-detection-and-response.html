@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("infosec-notes-theme") !== "light") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+  <title>Topic 8 — Intrusion Detection and Response</title>
+  <link rel="stylesheet" href="../../assets/css/notes.css">
+  <script src="../../assets/js/theme.js" defer></script>
+</head>
+<body>
+  <div class="page-wrapper has-toc-nav">
+    <aside class="sidebar toc" id="sidebar-nav">
+      <p class="toc-title">On this page</p>
+      <nav aria-label="Table of contents">
+        <ul>
+          <li><a href="#reading-path">Reading order</a></li>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#sec-8-1">8.1 Introduction &amp; governance</a></li>
+          <li><a href="#sec-8-2">8.2 Six-phase IDR lifecycle</a></li>
+          <li><a href="#sec-8-3">8.3 IDS overview</a></li>
+          <li><a href="#sec-8-4">8.4 Classification of IDS</a></li>
+          <li><a href="#sec-8-5">8.5 IDS evasion techniques</a></li>
+          <li><a href="#sec-8-6">8.6 Detection methods (GfG)</a></li>
+          <li><a href="#sec-8-7">8.7 Placement, benefits, limitations</a></li>
+          <li><a href="#sec-8-8">8.8 IDS vs IPS</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="site-header">
+        <h1>8. Intrusion Detection and Response</h1>
+        <p class="topic-meta">
+          <a href="../../index.html">← All books</a>
+          · <a href="../index.html">Book index</a>
+          · <a href="07-security-auditing.html">Topic 7</a>
+        </p>
+        <div class="header-actions">
+          <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="sidebar-nav" aria-label="Open page navigation">
+            <span class="nav-toggle-icon" aria-hidden="true">
+              <span class="nav-toggle-bar"></span>
+              <span class="nav-toggle-bar"></span>
+              <span class="nav-toggle-bar"></span>
+            </span>
+            <span class="nav-toggle-label">Menu</span>
+          </button>
+          <button type="button" class="theme-toggle" aria-pressed="false">
+            <span class="theme-toggle-label">Dark mode</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="reading-path" id="reading-path">
+        <div class="reading-path-title">Recommended reading order</div>
+        <ol>
+          <li><a href="#overview">Overview</a> — IDR vs static controls; IDS / firewall / IPS</li>
+          <li><a href="#sec-8-1">8.1</a> Introduction &amp; operational governance</li>
+          <li><a href="#sec-8-2">8.2</a> Six-phase IDR lifecycle</li>
+          <li>Reference depth: <a href="#sec-8-3">8.3</a>–<a href="#sec-8-8">8.8</a> (IDS technology &amp; IDS vs IPS)</li>
+        </ol>
+      </div>
+
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>
+          <strong>Intrusion Detection and Response (IDR)</strong> is the active, continuous layer that complements static controls (cryptography, protection models, kernels). Master <a href="#sec-8-1">§8.1</a> governance and <a href="#sec-8-2">§8.2</a> SOC lifecycle first; <a href="#sec-8-3">§8.3</a>–<a href="#sec-8-8">§8.8</a> are GeeksforGeeks reference depth on IDS technology.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <caption>Firewall vs IDS vs IPS</caption>
+            <thead>
+              <tr>
+                <th>Control</th>
+                <th>Role</th>
+                <th>Typical action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Firewall</strong></td>
+                <td>Perimeter filter by rule</td>
+                <td>Allow / deny traffic</td>
+              </tr>
+              <tr>
+                <td><strong>IDS</strong></td>
+                <td>Detect suspicious activity</td>
+                <td>Alert administrators (passive)</td>
+              </tr>
+              <tr>
+                <td><strong>IPS</strong></td>
+                <td>Detect and block inline</td>
+                <td>Drop or reset malicious sessions (active)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="sec-8-1">
+        <h2>8.1 Introduction &amp; Operational Governance</h2>
+        <p>An Intrusion Detection and Response (IDR) framework represents the active operational center of an enterprise security architecture. While cryptographic controls and protection models act as static defenses to secure data at rest and in transit, IDR provides the dynamic monitoring and reactive capabilities needed to detect, analyze, and neutralize active cyberattacks before they can cause catastrophic business damage.</p>
+        <p>To build a resilient security posture, organizations shift away from basic, passive perimeter filtering toward an active, continuous monitoring model. Modern information security governance relies on a comprehensive, four-part structural strategy:</p>
+
+        <pre class="diagram-ascii" aria-label="Four pillars of information security governance">┌────────────────────────────────────────────────────────┐
+│      Four Pillars of Information Security Governance   │
+├────────────────────────────────────────────────────────┤
+│ 1. Writing &amp; Implementing Enterprise Policy            │
+│   └──► 2. Planning &amp; Executing Effective Programs      │
+│         └──► 3. Installing &amp; Testing Countermeasures   │
+│               └──► 4. Measuring Employee Training      │
+└────────────────────────────────────────────────────────┘</pre>
+
+        <h3>1. Writing &amp; Implementing Enterprise Information Security Policy</h3>
+        <p>The administrative foundation of any intrusion response system is a formally documented, legally binding Information Security Policy. This high-level document establishes management's commitment to security, defines roles and responsibilities across the company, and outlines the organizational rules for data protection. It grants security operations teams the legal authority to monitor network traffic, inspect endpoints, and isolate compromised systems during an incident.</p>
+
+        <h3>2. Planning &amp; Executing Effective Information Security Programs</h3>
+        <p>An effective security program translates abstract policy guidelines into structured, daily business operations. It coordinates budgets, selects security standards (such as NIST or ISO 27001), establishes a Security Operations Center (SOC), and ensures that the organization maintains adequate visibility across all cloud, on-premises, and hybrid infrastructure environments.</p>
+
+        <h3>3. Installing &amp; Testing Technology-Based Information Security Countermeasures</h3>
+        <p>This phase involves deploying and validating technical defenses across the network architecture. Security teams install advanced defensive technologies—including Next-Generation Firewalls (NGFWs), Intrusion Detection Systems (IDS), Intrusion Prevention Systems (IPS), and Endpoint Detection and Response (EDR) agents. Auditors evaluate whether these controls are effective under <a href="07-security-auditing.html#sec-7-5">Topic 7 §7.5</a>.</p>
+        <p>Crucially, these countermeasures cannot simply be installed and left alone; they must undergo continuous validation through routine Penetration Testing and Breach and Attack Simulation (BAS) drills to ensure that detection signatures and alerting thresholds are working as intended.</p>
+
+        <h3>4. Conducting &amp; Measuring the Effectiveness of Employee Training and Awareness Activities</h3>
+        <p>Because human error remains a primary vector for initial network entry (via phishing, credential harvesting, or social engineering), organizations must maintain continuous security awareness programs.</p>
+        <p>The effectiveness of these programs must be empirically measured over time through metrics like Phishing Click-Through Rates and Reporting Latencies (tracking how many employees click on a simulated phishing link versus how many safely report it to the security team).</p>
+      </section>
+
+      <section id="sec-8-2">
+        <h2>8.2 The Continuous Technical Phase Lifecycle of Intrusion Handling</h2>
+        <p>When an attack occurs, an enterprise relies on a highly structured, cyclical operational workflow to manage the incident. This lifecycle ensures that attacks are detected early, contained quickly, and thoroughly investigated to prevent future breaches. For audit-oriented IR planning, see <a href="07-security-auditing.html#sec-7-7">Topic 7 §7.7</a>.</p>
+        <div class="callout exam">
+          <div class="callout-title">Exam tip — six phases</div>
+          <p><strong>M-D-A-I-R-R</strong>: <strong>M</strong>onitor → <strong>D</strong>etect → <strong>A</strong>lert → <strong>I</strong>nvestigate → <strong>R</strong>espond (contain / eradicate / recover) → <strong>R</strong>eport.</p>
+        </div>
+
+        <h3>Phase 1: Monitoring (Continuous Visibility)</h3>
+        <p>Monitoring is the continuous process of gathering real-time telemetry, log files, and network packet information across the organization's digital environment to ensure complete visibility.</p>
+        <h4>Data Sources &amp; Telemetry Gathering</h4>
+        <ul>
+          <li><strong>Network Logs:</strong> Collecting NetFlow data, DNS resolution queries, proxy access logs, and raw packet captures (PCAPs) from core routers and switches.</li>
+          <li><strong>Host Logs:</strong> Ingesting event logs from operating systems (e.g., Windows Event Logs, Linux Syslog), audit daemons, and authentication services (Active Directory).</li>
+          <li><strong>Application Logs:</strong> Capturing activity records from databases (SQL queries), web servers (Nginx/Apache access logs), and API gateways to identify logic abuse.</li>
+          <li><strong>Security Countermeasures:</strong> Gathering alert feeds from local firewalls, antivirus platforms, and cloud access security brokers (CASBs).</li>
+        </ul>
+        <h4>SIEM Integration &amp; Log Centralization</h4>
+        <p>To manage these massive volumes of data, enterprises implement a SIEM (Security Information and Event Management) platform (such as Splunk, Microsoft Sentinel, or Elastic Security). The SIEM acts as a centralized repository, ingesting millions of event logs from across the network, normalizing the data formats, and preparing the records for real-time analysis.</p>
+
+        <h3>Phase 2: Detection (Anomalies &amp; Attack Identification)</h3>
+        <p>Detection is the technical process of analyzing normalized SIEM logs and network streams to identify active attacks, security policy violations, or suspicious anomalies.</p>
+
+        <pre class="diagram-ascii" aria-label="Detection methods: signature-based vs anomaly-based">                  ┌─────────────────────────────────────────┐
+                  │            Detection Methods            │
+                  └────────────────────┬────────────────────┘
+            ┌──────────────────────────┴──────────────────────────┐
+            ▼                                                     ▼
+┌────────────────────────┐                             ┌────────────────────────┐
+│   Signature-Based      │                             │    Anomaly-Based       │
+│ Matches Known Patterns │                             │ Flags Baseline Deviations│
+│ Low False Positives    │                             │ Catches Zero-Day Flaws │
+└────────────────────────┘                             └────────────────────────┘</pre>
+
+        <h4>1. Signature-Based Detection (Knowledge-Based)</h4>
+        <p><strong>How it works:</strong> The system compares incoming network packets or system events against a database of known attack patterns, file hashes, or malicious indicators—universally called Signatures.</p>
+        <p><strong>Example:</strong> An IDS scans an incoming file download, notes that its MD5 hash matches a known variant of ransomware, and flags it instantly.</p>
+        <p><strong>Pros:</strong> Highly accurate and reliable for catching known threats, with a very low rate of False Positives (incorrectly flagging legitimate traffic as malicious).</p>
+        <p><strong>Cons:</strong> Completely blind to Zero-Day Attacks (new vulnerabilities or customized malware payloads that have never been seen before and lack an established signature).</p>
+
+        <h4>2. Anomaly-Based Detection (Behavior-Based)</h4>
+        <p><strong>How it works:</strong> The system first observes normal network behavior over an extended testing window to establish a trusted Performance Baseline (tracking metrics like standard CPU loads, typical database query volumes, and normal employee login times). Once the baseline is set, the system uses machine learning models to identify any statistical deviations from those patterns.</p>
+        <p><strong>Example:</strong> If an engineer who normally logs in from an office IP address between 9:00 AM and 5:00 PM suddenly logs in at 3:00 AM from a foreign VPN node and attempts to download 50GB of database files, the system flags the behavior as a major anomaly.</p>
+        <p><strong>Pros:</strong> Highly effective at identifying zero-day exploits, advanced persistent threats (APTs), and compromised insider accounts.</p>
+        <p><strong>Cons:</strong> High rate of False Positives, as normal business changes (e.g., a software update causing a sudden spike in network traffic) can easily trigger false alarms, creating alert fatigue for analysts.</p>
+
+        <h3>Phase 3: Alerting (Triage &amp; Notification)</h3>
+        <p>Once a detection engine identifies a signature match or a significant behavioral anomaly, it triggers the Alerting phase to notify security analysts.</p>
+        <h4>Alert Triage &amp; Prioritization</h4>
+        <p>Because modern networks generate thousands of automated security alerts daily, systems map events to the universal CVSS severity scale (Low, Medium, High, Critical) to prioritize responses. This ensures that a critical remote code execution alert on a production database is investigated immediately, while a low-priority notification about a minor configuration issue is queued for later review.</p>
+        <h4>Reducing Alert Fatigue</h4>
+        <p>If a detection system is poorly tuned, it can overwhelm security teams with false alarms—a condition known as Alert Fatigue. To prevent analysts from missing true attacks amidst the noise, engineers continuously tune rules, suppress known non-malicious alerts, and use automated correlation scripts to combine multiple related low-level events into a single, high-fidelity security incident.</p>
+
+        <h3>Phase 4: Investigation (Analysis &amp; Contextualization)</h3>
+        <p>During the Investigation phase, a Tier-1 or Tier-2 SOC analyst takes ownership of an alert to verify whether it represents a true security breach or a false positive.</p>
+        <h4>Investigative Triage Steps</h4>
+        <ul>
+          <li><strong>Verification:</strong> The analyst reviews the raw log entries, packet captures, and system states to verify the legitimacy of the alert, filtering out false positives.</li>
+          <li><strong>Contextual Ingestion:</strong> Gathering adjacent data to understand the scope of the event. The analyst will check the target system's business value, identify its owner, and trace user access histories.</li>
+          <li><strong>Threat Intelligence Correlation:</strong> Cross-referencing the alert indicators (IP addresses, domain names, file hashes) against global threat intelligence feeds (such as VirusTotal, AlienVault OTX, or MITRE ATT&amp;CK frameworks) to identify known malicious campaigns or threat groups.</li>
+        </ul>
+
+        <h3>Phase 5: Response (Containment, Eradication, &amp; Recovery)</h3>
+        <p>When an investigation confirms an active breach, the team moves into the Response phase to contain the attack and minimize business damage.</p>
+
+        <pre class="diagram-ascii" aria-label="Response flow: containment, eradication, recovery">[ Containment ] ──► [ Eradication ] ──► [ Recovery ]</pre>
+
+        <h4>1. Containment (Isolating the Threat)</h4>
+        <p>The immediate goal is to stop the attack from spreading across the network (lateral movement).</p>
+        <p><strong>Short-Term Actions:</strong> Disconnecting compromised servers from the network, disabling compromised user accounts in Active Directory, or modifying firewall rules to block the attacker's command-and-control (C2) IP addresses.</p>
+
+        <h4>2. Eradication (Eliminating the Threat)</h4>
+        <p>Once the attack is contained, the team securely removes all remnants of the threat from the environment.</p>
+        <p><strong>Actions:</strong> Deleting malware files, cleaning registry keys, terminating unauthorized background processes, and patching the software vulnerabilities that allowed the attacker to gain entry in the first place.</p>
+
+        <h4>3. Recovery (Restoring Operations)</h4>
+        <p>The final step is safely returning affected systems to full production operations.</p>
+        <p><strong>Actions:</strong> Restoring data from verified, clean immutable backups, resetting passwords across all compromised user accounts, and monitoring the restored systems closely to ensure the attacker does not attempt to re-enter.</p>
+
+        <h3>Phase 6: Reporting (Documentation &amp; Root-Cause Analysis)</h3>
+        <p>The lifecycle concludes with the Reporting phase, which documents the incident for corporate compliance, legal protection, and ongoing defensive improvements. Audit-style reporting structure: <a href="07-security-auditing.html#sec-7-9">Topic 7 §7.9</a>.</p>
+        <h4>Essential Components of an Incident Report</h4>
+        <ul>
+          <li><strong>Executive Summary:</strong> A high-level, business-focused summary of the incident, its operational impact, and the remediation costs, tailored for executive leadership and board members.</li>
+          <li><strong>Chronological Timeline:</strong> A granular, timestamped breakdown of the incident, documenting exactly when the initial entry occurred, when the alert fired, when containment was achieved, and when full recovery was completed.</li>
+          <li><strong>Technical Root-Cause Analysis (RCA):</strong> A deep technical post-mortem detailing exactly how the attacker bypassed defenses (e.g., documenting an unpatched software bug or a specific phishing email).</li>
+          <li><strong>Lessons Learned &amp; Action Item Plan:</strong> A list of actionable recommendations designed to improve the organization's defenses and update incident playbooks, ensuring that the same vulnerability cannot be exploited in a future attack.</li>
+        </ul>
+      </section>
+
+      <section id="sec-8-3">
+        <h2>8.3 Intrusion Detection System (IDS) — Overview</h2>
+        <p class="topic-meta">GeeksforGeeks — Last Updated : 11 Apr, 2026</p>
+        <p>An Intrusion Detection System (IDS) is a security tool that monitors network traffic or system activities to detect unauthorized access or suspicious behavior. Think of it as a "watchdog" that looks for signs of cyber attacks or security breaches, helping administrators respond quickly before damage occurs.</p>
+        <ul>
+          <li><strong>Intrusion:</strong> Unauthorized access to a system, often by cybercriminals using advanced techniques.</li>
+          <li><strong>IDS Functions:</strong> Monitors traffic for unusual activities and alerts administrators when potential attacks are detected.</li>
+          <li><strong>Detection Focus:</strong> IDS looks for abnormal behavior that could harm data integrity, confidentiality or availability (<a href="01-introduction-to-info-sec.html#sec-1-2">Topic 1 — CIA triad</a>).</li>
+        </ul>
+
+        <h3>Common Methods of Intrusion</h3>
+        <ul>
+          <li><strong>Address Spoofing:</strong> Hiding the source of an attack by using fake or unsecured proxy servers making it hard to identify the attacker.</li>
+          <li><strong>Fragmentation:</strong> Sending data in small pieces to slip past detection systems.</li>
+          <li><strong>Pattern Evasion:</strong> Changing attack methods to avoid detection by IDS systems that look for specific patterns.</li>
+          <li><strong>Coordinated Attack:</strong> Using multiple attackers or ports to scan a network, confusing the IDS and making it hard to see what is happening.</li>
+        </ul>
+
+        <h3>Working IDS</h3>
+        <p>An IDS operates by monitoring network traffic or system activities to detect suspicious or malicious actions. Here's how it works:</p>
+        <ol>
+          <li><strong>Traffic Monitoring:</strong> The IDS captures and monitors data flowing through the network.</li>
+          <li><strong>Pattern Matching:</strong> It compares the incoming data against a set of predefined rules or patterns that could indicate potential attacks or intrusions.</li>
+          <li><strong>Alerting:</strong> If the system detects an activity that matches any of these patterns, it triggers an alert to notify the system administrator.</li>
+          <li><strong>Administrator Action:</strong> Upon receiving the alert, the administrator can investigate the source of the potential attack and take necessary actions to mitigate the risk.</li>
+        </ol>
+
+        <figure class="diagram figure-photo" aria-labelledby="fig-ids-topology-caption">
+          <img src="../../assets/images/topic-08/ids-network-placement.png"
+               alt="Network topology: Internet through firewall and LAN to workstations, with IDS monitoring LAN traffic"
+               width="640" height="auto" loading="lazy" decoding="async" />
+          <figcaption id="fig-ids-topology-caption">IDS — Internet → Firewall → LAN with IDS monitoring internal traffic to workstations.</figcaption>
+        </figure>
+      </section>
+
+      <section id="sec-8-4">
+        <h2>8.4 Classification of IDS</h2>
+        <p>There are several types of IDS, categorized based on where they operate or how they detect intrusions:</p>
+
+        <h3>1. Network Intrusion Detection System (NIDS)</h3>
+        <p><strong>Function:</strong> NIDS is deployed at strategic points within the network to monitor traffic from all devices.</p>
+        <p><strong>Usage:</strong> It examines passing traffic across subnets and compares it against known attack signatures. When an attack is detected, it alerts the administrator.</p>
+        <p><strong>Example:</strong> A NIDS could be placed in front of firewalls to monitor any attempts to crack the firewall.</p>
+
+        <h3>2. Host Intrusion Detection System (HIDS)</h3>
+        <p><strong>Function:</strong> HIDS operates on individual devices (hosts) within the network.</p>
+        <p><strong>Usage:</strong> It monitors traffic and file integrity on that specific host, comparing current system files with previous snapshots to detect unauthorized changes.</p>
+        <p><strong>Example:</strong> A HIDS is often used on critical systems that should not be modified, like servers or sensitive machines.</p>
+
+        <h3>3. Hybrid Intrusion Detection System</h3>
+        <p><strong>Function:</strong> A hybrid IDS combines multiple IDS types to provide more comprehensive protection.</p>
+        <p><strong>Usage:</strong> It integrates host-based and network-based monitoring to give a complete view of network and system activity.</p>
+        <p><strong>Example:</strong> Prelude is a hybrid IDS that combines NIDS and HIDS approaches.</p>
+
+        <h3>4. Application Protocol-Based IDS (APIDS)</h3>
+        <p><strong>Function:</strong> APIDS monitors and analyzes application-specific protocols to detect potential attacks targeting specific applications.</p>
+        <p><strong>Usage:</strong> It tracks communication protocols like SQL to detect malicious activity during database interactions.</p>
+        <p><strong>Example:</strong> Monitoring SQL queries in a web server environment.</p>
+
+        <h3>5. Protocol-Based IDS (PIDS)</h3>
+        <p><strong>Function:</strong> PIDS monitors communication protocols between devices (like HTTPS or HTTP) to detect abnormal activity.</p>
+        <p><strong>Usage:</strong> It ensures that the communication follows expected patterns, identifying deviations that may signal an attack.</p>
+        <p><strong>Example:</strong> Monitoring the HTTPS traffic entering a server.</p>
+      </section>
+
+      <section id="sec-8-5">
+        <h2>8.5 IDS Evasion Techniques</h2>
+        <p>Attackers often use methods to evade detection by IDS systems. Some of the most common evasion techniques include:</p>
+        <ul>
+          <li><strong>Fragmentation:</strong> An attacker breaks down malicious packets into smaller fragments. Since IDS systems may only scan the full packet, these fragments can bypass detection.</li>
+          <li><strong>Packet Encoding:</strong> Attackers encode malicious packets using techniques like Base64 or hexadecimal encoding to hide malicious content from signature-based IDS systems.</li>
+          <li><strong>Traffic Obfuscation:</strong> Obfuscating the content of packets by altering the structure or encoding makes it difficult for the IDS to interpret and detect the attack.</li>
+          <li><strong>Encryption:</strong> Attackers may use encryption to hide malicious payloads, making it harder for an IDS to detect attacks hidden within encrypted traffic.</li>
+        </ul>
+      </section>
+
+      <section id="sec-8-6">
+        <h2>8.6 Detection Method of IDS (GeeksforGeeks)</h2>
+        <div class="callout canonical">
+          <div class="callout-title">Full treatment — signature vs anomaly</div>
+          <p>In-depth comparison with examples and pros/cons: <a href="#sec-8-2">§8.2 Phase 2 — Detection</a>. Text below is the GfG article recap.</p>
+        </div>
+
+        <h3>Signature-Based Detection</h3>
+        <p>This method relies on predefined patterns (signatures) of known attacks. It compares incoming data to a database of attack signatures.</p>
+        <ul>
+          <li>Easy to implement and effective for detecting known threats.</li>
+          <li>Cannot detect new or unknown attacks unless their signature is added to the database.</li>
+          <li><strong>Example:</strong> Detecting a specific virus or malware pattern.</li>
+        </ul>
+
+        <h3>Anomaly-Based Detection</h3>
+        <p>Anomaly-based IDS uses machine learning or statistical models to define what normal behavior looks like. Any activity that deviates from this norm is flagged as suspicious.</p>
+        <ul>
+          <li>Can detect unknown attacks or behaviors.</li>
+          <li>High rate of false positives if the model is not fine-tuned.</li>
+          <li><strong>Example:</strong> Detecting abnormal traffic volume or unusual access patterns on a server.</li>
+        </ul>
+      </section>
+
+      <section id="sec-8-7">
+        <h2>8.7 Comparison with Firewalls, Importance, Placement, Benefits, and Limitations</h2>
+
+        <h3>Comparison of IDS with Firewalls</h3>
+        <p>While both IDS and firewalls play important roles in network security, they serve different purposes:</p>
+        <ul>
+          <li><strong>Firewall:</strong> A firewall works to prevent unauthorized access by restricting traffic between networks based on predefined rules. It blocks suspicious inbound or outbound traffic, but it doesn't alert you when an attack happens inside the network.</li>
+          <li><strong>IDS:</strong> An IDS, on the other hand, works by detecting and alerting on suspicious activity after an attack has occurred. It doesn't block traffic but instead alerts administrators so they can respond to potential threats.</li>
+        </ul>
+        <p>See also <a href="03-protection-models.html">Topic 3 — protection models</a> for network segmentation and layered controls.</p>
+
+        <h3>Importance of IDS</h3>
+        <ul>
+          <li><strong>Complementary Security Layer:</strong> IDS works alongside firewalls and other security measures to provide comprehensive protection.</li>
+          <li><strong>Early Detection:</strong> IDS can detect intrusions that bypass primary defenses like firewalls or VPNs.</li>
+          <li><strong>Rapid Response:</strong> Alerts from IDS help administrators respond quickly to attacks, potentially reducing damage.</li>
+        </ul>
+
+        <h3>Placement of IDS</h3>
+        <ul>
+          <li><strong>Behind the Firewall:</strong> Placing an IDS behind the firewall allows it to monitor incoming traffic without receiving internal traffic. This position provides visibility of external threats but avoids false alarms generated by internal traffic.</li>
+          <li><strong>Within the Network:</strong> An IDS placed inside the network monitors internal traffic, helping to detect intrusions after the firewall has been bypassed.</li>
+          <li><strong>Advanced IDS:</strong> In more sophisticated setups, an IDS may be integrated with the firewall, allowing for better response and detection of complex attacks entering the network.</li>
+        </ul>
+        <p>Network placement diagram: <a href="#sec-8-3">§8.3 — Working IDS</a> (Internet → Firewall → LAN → IDS → Workstations).</p>
+
+        <h3>Benefits of IDS</h3>
+        <ul>
+          <li><strong>Detects Malicious Activity:</strong> IDS can detect any suspicious activities and alert the system administrator before any significant damage is done.</li>
+          <li><strong>Improves Network Performance:</strong> IDS can identify any performance issues on the network, which can be addressed to improve network performance.</li>
+          <li><strong>Compliance Requirements:</strong> IDS can help in meeting compliance requirements by monitoring network activity and generating reports.</li>
+          <li><strong>Provides Insights:</strong> IDS generates valuable insights into network traffic, which can be used to identify any weaknesses and improve network security.</li>
+        </ul>
+
+        <h3>Limitations of IDS</h3>
+        <ul>
+          <li><strong>False Alarms:</strong> IDS can generate false positives, alerting on harmless activities and causing unnecessary concern.</li>
+          <li><strong>Resource Intensive:</strong> It can use a lot of system resources, potentially slowing down network performance.</li>
+          <li><strong>Requires Maintenance:</strong> Regular updates and tuning are needed to keep the IDS effective, which can be time-consuming.</li>
+          <li><strong>Doesn't Prevent Attacks:</strong> IDS detects and alerts but doesn't stop attacks, so additional measures are still needed.</li>
+          <li><strong>Complex to Manage:</strong> Setting up and managing an IDS can be complex and may require specialized knowledge.</li>
+        </ul>
+      </section>
+
+      <section id="sec-8-8">
+        <h2>8.8 Intrusion Detection Systems (IDS) vs Intrusion Prevention Systems (IPS)</h2>
+        <p class="topic-meta">GeeksforGeeks — Last Updated : 28 Apr, 2025</p>
+        <p>Intrusion Detection Systems (IDS) and Intrusion Prevention Systems (IPS) are two critical network security tools used to protect systems and networks from cyber threats. While they both aim to safeguard against cyberattacks, they differ in how they operate and the actions they take. Understanding the key differences between IDS and IPS is essential for creating a robust cybersecurity defense plan.</p>
+
+        <h3>Intrusion Detection System (IDS)</h3>
+        <p>IDS is a hardware or software tool that monitors and analyzes network or system activities for signs of unauthorized access or policy violations. It passively scans incoming traffic and compares it to pre-configured signatures or behavioral patterns. IDS alerts the system administrator when potential threats are detected but does not take any active action to block or mitigate them.</p>
+        <p><strong>Example:</strong><br>
+        IDS detects an unusual spike in network traffic during off-peak hours and sends an alert to the administrator, notifying them of a possible security breach.</p>
+
+        <h3>Intrusion Prevention System (IPS)</h3>
+        <p>IPS is an advanced security system that not only detects malicious activities but also prevents them from happening in real-time. It intercepts network traffic, compares it to known threat signatures, and immediately blocks or neutralizes suspicious activities before they can cause damage. IPS is proactive, while IDS is primarily reactive.</p>
+        <p><strong>Example:</strong><br>
+        IPS detects a malicious payload based on its signature and immediately blocks the traffic, preventing the malware from entering the network.</p>
+
+        <h3>Key Differences Between IDS and IPS</h3>
+        <div class="callout exam">
+          <div class="callout-title">Exam tip — IDS vs IPS</div>
+          <p><strong>IDS</strong> = passive monitor + alert (analyst decides). <strong>IPS</strong> = inline, blocks or resets traffic in real time. Both may use signatures; IPS adds enforcement. See also <a href="#overview">Overview table</a>.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <caption>Key Differences Between IDS and IPS</caption>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Intrusion Detection System (IDS)</th>
+                <th>Intrusion Prevention System (IPS)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Functionality</strong></td>
+                <td>Detects and alerts on malicious activities.</td>
+                <td>Detects, alerts, and blocks malicious activities in real-time.</td>
+              </tr>
+              <tr>
+                <td><strong>Action</strong></td>
+                <td>Does not take action, only provides alerts.</td>
+                <td>Actively blocks or neutralizes threats to prevent damage.</td>
+              </tr>
+              <tr>
+                <td><strong>Response Time</strong></td>
+                <td>Passive monitoring; alerts after the fact.</td>
+                <td>Real-time, active prevention of threats.</td>
+              </tr>
+              <tr>
+                <td><strong>Use Case</strong></td>
+                <td>Useful for monitoring and alerting about potential threats.</td>
+                <td>Suitable for preventing breaches in real-time.</td>
+              </tr>
+              <tr>
+                <td><strong>Example</strong></td>
+                <td>Alerting about traffic spikes during non-burst times.</td>
+                <td>Blocking malware in real-time based on a known signature.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="callout exam" id="key-takeaways">
+        <div class="callout-title">Key takeaways — Topic 8</div>
+        <ul>
+          <li>Four governance pillars: policy → programs → countermeasures (IDS/IPS/EDR) → measured training.</li>
+          <li>Six IDR phases: Monitoring → Detection → Alerting → Investigation → Response → Reporting.</li>
+          <li>Signature-based detection: low false positives, blind to zero-days; anomaly-based: catches novel behavior, higher false positives.</li>
+          <li>CVSS triage and rule tuning reduce alert fatigue in the SOC.</li>
+          <li>IDS types: NIDS, HIDS, hybrid, APIDS, PIDS — choose by monitoring scope.</li>
+          <li>Firewall blocks by rule; IDS alerts on suspicious activity; IPS detects and blocks inline.</li>
+          <li>IDS placement: behind firewall (external threats) vs within network (post-perimeter intrusions).</li>
+        </ul>
+      </div>
+
+      <footer class="page-footer">
+        <a href="07-security-auditing.html">← Topic 7</a>
+        <a href="../index.html">Book index</a>
+        <a href="../../index.html">All books</a>
+        <span>Topic 9 — coming soon</span>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
