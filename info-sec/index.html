@@ -47,22 +47,22 @@
       <a class="topic-card available" href="topics/01-introduction-to-info-sec.html">
         <span class="badge ready">Available</span>
         <h3>Topic 1 — Introduction to Information Security</h3>
-        <p>Definitions, CIA goals, principles, InfoSec vs cybersecurity vs network security, types of data, elements of a security program, and CIA deep dive.</p>
+        <p>Definitions, why InfoSec matters, CIA goals (then deep dive), principles, domains, ISMS/GDPR, challenges, and history — with recommended reading order.</p>
       </a>
       <a class="topic-card available" href="topics/02-authentication-models.html">
         <span class="badge ready">Available</span>
         <h3>Topic 2 — Authentication Models</h3>
-        <p>Authentication factors, models (centralized, SSO, federated), evolution SFA→continuous, and comparison matrices.</p>
+        <p>Factors → methods → models → evolution (SFA to continuous) → applications → digital auth catalog, with reading order and diagrams.</p>
       </a>
       <a class="topic-card available" href="topics/03-protection-models.html">
         <span class="badge ready">Available</span>
         <h3>Topic 3 — Protection Models</h3>
-        <p>Access control (MAC, DAC, RBAC, ABAC), Bell-LaPadula, Biba, Clark-Wilson, TCB, availability, defense in depth, and POLA.</p>
+        <p>Classic models, access control (MAC–ABAC), confidentiality/integrity models, TCB, availability, defense in depth, POLA — numbered 1–9 reading order.</p>
       </a>
       <a class="topic-card available" href="topics/04-security-kernel.html">
         <span class="badge ready">Available</span>
         <h3>Topic 4 — The Security Kernel Concept</h3>
-        <p>Reference monitor, monolithic vs microkernel, kernel responsibilities, isolation, and formal verification.</p>
+        <p>Reference monitor, monolithic vs microkernel (plus hybrid/hypervisor notes), responsibilities, seven characteristics, formal verification.</p>
       </a>
       <a class="topic-card available" href="topics/05-advanced-cryptography.html">
         <div class="topic-card-badges">
@@ -71,11 +71,16 @@
           <span class="topic-tag asym">Asym</span>
         </div>
         <h3>Topic 5 — Advanced Cryptography</h3>
-        <p>Cryptology, encryption &amp; decryption, ciphers, key space, hashing, symmetric &amp; asymmetric algorithms, HTTPS, and E2EE.</p>
+        <p>Logical reading order: cryptology → classical ciphers → modern encryption → types → algorithm catalogs → HTTPS/E2EE → applications. Links to Topic 6 for HMAC and signatures.</p>
+      </a>
+      <a class="topic-card available" href="topics/06-hashing-and-digital-signatures.html">
+        <span class="badge ready">Available</span>
+        <h3>Topic 6 — Hashing and Digital Signatures</h3>
+        <p>Hash evolution, HMAC, digital signatures and certificates (CA/X.509), hash vs encryption vs encoding, RSA/DSA/ECDSA, summary matrix, and OpenSSL/CyberChef labs.</p>
       </a>
       <div class="topic-card" aria-disabled="true">
         <span class="badge soon">Coming soon</span>
-        <h3>Topic 6+</h3>
+        <h3>Topic 7+</h3>
         <p>Additional topics will appear here when published.</p>
       </div>
     </div>
@@ -97,7 +102,7 @@
         <li class="done">Authentication models</li>
         <li class="done">Protection models</li>
         <li class="done">Security kernels</li>
-        <li class="done">Encryption, hashing, and digital signatures</li>
+        <li class="done">Encryption, hashing, and digital signatures (Topics 5–6)</li>
         <li class="pending">Audit</li>
         <li class="pending">Intrusion detection and response</li>
         <li class="pending">Database security</li>

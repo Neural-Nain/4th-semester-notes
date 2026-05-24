@@ -80,7 +80,19 @@
         </div>
       </header>
 
-      <section id="overview">
+      <div class="reading-path" id="reading-path">
+        <div class="reading-path-title">Recommended reading order</div>
+        <ol>
+          <li><a href="#overview">Overview</a> — security kernel and TCB terms</li>
+          <li><a href="#tcb-kernel-relation">TCB vs security kernel</a></li>
+          <li><a href="#sec-4-1">4.1 Reference monitor</a> — abstract design</li>
+          <li><a href="#sec-4-2">4.2 Monolithic vs microkernel</a> — architecture</li>
+          <li><a href="#sec-4-3">4.3 Key responsibilities</a> — four operational tasks</li>
+          <li><a href="#sec-4-4">4.4 Characteristics &amp; functions</a> — seven properties in depth</li>
+        </ol>
+      </div>
+
+<section id="overview">
         <p>
           In high-assurance computer security architecture, a <strong>Security Kernel</strong> is the hardware, firmware,
           and software elements of a Trusted Computing Base (TCB) that implement the central security core of an operating
@@ -108,7 +120,7 @@
         </div>
       </section>
 
-      <section id="tcb-kernel-relation">
+<section id="tcb-kernel-relation">
         <h2>TCB vs Security Kernel (Related Concept)</h2>
         <p>
           From <a href="03-protection-models.html#sec-tcb">Topic 3 — Trusted Computing Base</a>: the TCB is everything required
@@ -135,7 +147,7 @@
         </figure>
       </section>
 
-      <section id="sec-4-1">
+<section id="sec-4-1">
         <h2>4.1 The Reference Monitor Concept</h2>
         <p>
           To understand the security kernel, you must first understand the <strong>Reference Monitor</strong>. The Reference
@@ -230,9 +242,17 @@
           </svg>
           <figcaption id="syscall-flow-caption">Typical path: user request → kernel trap → reference monitor decision → object access or denial + audit.</figcaption>
         </figure>
+        <div class="callout exam">
+          <div class="callout-title">Reference monitor checklist (exam)</div>
+          <ul>
+            <li><strong>Complete mediation</strong> — every access checked; no bypass</li>
+            <li><strong>Isolation</strong> — monitor in Ring 0; users cannot modify it</li>
+            <li><strong>Verifiability</strong> — small enough to audit or prove formally</li>
+          </ul>
+        </div>
       </section>
 
-      <section id="sec-4-2">
+<section id="sec-4-2">
         <h2>4.2 Security Kernel Architecture: Monolithic vs. Microkernel</h2>
         <p>
           How an operating system designs its core kernel fundamentally alters its security posture and attack surface. The two
@@ -342,13 +362,22 @@
           <li><strong>Cons:</strong> Slower performance overhead due to constant context-switching and IPC message copying between isolated user-space modules.</li>
         </ul>
 
+        <h3 id="related-architectures">Related architectures: hybrid kernels and hypervisors</h3>
+        <p>
+          Real systems often blend designs. A <strong>hybrid kernel</strong> (e.g. Windows NT, macOS XNU) runs a microkernel-style core but keeps performance-critical parts (network stack, parts of the file system) in kernel mode for speed—larger Ring 0 than a pure microkernel, smaller than classic monolithic Linux.
+        </p>
+        <ul>
+          <li><strong>Hypervisor (Type 1):</strong> Runs directly on hardware; isolates multiple guest OS instances (VMware ESXi, Xen).</li>
+          <li><strong>Hypervisor (Type 2):</strong> Runs as an application on a host OS (VirtualBox, VMware Workstation).</li>
+          <li><strong>Security link:</strong> The hypervisor becomes part of the TCB when VMs share hardware—compromise breaks isolation between guests.</li>
+        </ul>
         <div class="callout exam">
           <div class="callout-title">Exam tip — driver compromise</div>
           <p><strong>Monolithic:</strong> bad driver = full kernel compromise. <strong>Microkernel:</strong> bad driver = restart that service only; security kernel stays intact.</p>
         </div>
       </section>
 
-      <section id="sec-4-3">
+<section id="sec-4-3">
         <h2>4.3 Key Responsibilities of the Security Kernel</h2>
         <p>An operational security kernel continuously executes four low-level system administration tasks:</p>
         <div class="table-wrap">
@@ -387,7 +416,7 @@
         </div>
       </section>
 
-      <section id="sec-4-4">
+<section id="sec-4-4">
         <h2>4.4 Characteristics and Core Functions of a Security Kernel</h2>
         <p>
           To implement a fully operational Reference Monitor, a security kernel must exhibit specific core characteristics and
@@ -504,7 +533,19 @@
         </div>
       </section>
 
-      <footer class="page-footer">
+      <div class="callout exam" id="key-takeaways">
+        <div class="callout-title">Key takeaways — Topic 4</div>
+        <ul>
+          <li>Reference monitor = design; security kernel = implementation in Ring 0.</li>
+          <li>Three properties: complete mediation, isolation, verifiability.</li>
+          <li>Monolithic = large Ring 0, fast, high attack surface; microkernel = tiny Ring 0, isolated drivers.</li>
+          <li>Four responsibilities: isolation, rings, access rules, audit logging.</li>
+          <li>Seven characteristics expand how the kernel enforces policy and resists tampering.</li>
+          <li>TCB includes hardware, firmware, and kernel; compromise of kernel breaks the system.</li>
+        </ul>
+      </div>
+
+<footer class="page-footer">
         <a href="03-protection-models.html">← Topic 3</a>
         <a href="../index.html">Book index</a>
         <a href="../../index.html">All books</a>

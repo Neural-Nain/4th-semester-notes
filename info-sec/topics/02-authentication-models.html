@@ -34,6 +34,13 @@
               <li><a href="#factor-location">Location / Context</a></li>
             </ul>
           </li>
+          <li><a href="#sec-2-5">2.5 Authentication Methods</a>
+            <ul>
+              <li><a href="#auth-method-password">Password-based</a></li>
+              <li><a href="#auth-method-physical">Physical identification</a></li>
+              <li><a href="#auth-method-biometric">Biometric</a></li>
+            </ul>
+          </li>
           <li><a href="#sec-2-2">2.2 Core Authentication Models</a>
             <ul>
               <li><a href="#model-centralized">Centralized</a></li>
@@ -56,6 +63,8 @@
               <li><a href="#auth-context-comparison">Context-aware comparison</a></li>
             </ul>
           </li>
+          <li><a href="#sec-2-6">2.6 Applications</a></li>
+          <li><a href="#sec-2-7">2.7 Types of Digital Authentication</a></li>
         </ul>
       </nav>
     </aside>
@@ -83,20 +92,61 @@
         </div>
       </header>
 
-      <section id="overview">
-        <p>
-          Authentication (AuthN) is the critical process of validating the identity of a user, system, or device. In
-          information security, authentication acts as the gatekeeper; before an entity can be granted authorization
-          (permissions) to access resources, it must definitively prove who it claims to be.
-        </p>
-        <p>
-          Authentication models categorize how these identities are structured, verified, and managed across local and
-          distributed enterprise environments.
-        </p>
-      </section>
+      <div class="reading-path" id="reading-path">
+        <div class="reading-path-title">Recommended reading order</div>
+        <ol>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#sec-2-1">2.1 Factors</a> (knowledge, possession, inherence…)</li>
+          <li><a href="#sec-2-5">2.5 Methods</a> (password, physical, biometric)</li>
+          <li><a href="#sec-2-2">2.2 Core models</a> (centralized, SSO, federated…)</li>
+          <li><a href="#sec-2-3">2.3 Comparison matrix</a></li>
+          <li><a href="#sec-2-4">2.4 Evolution</a> (SFA → continuous)</li>
+          <li><a href="#sec-2-6">2.6 Applications</a></li>
+          <li><a href="#sec-2-7">2.7 Digital auth catalog</a></li>
+        </ol>
+      </div>
+
+      
 
       <!-- 2.1 -->
-      <section id="sec-2-1">
+      
+
+      <!-- 2.2 -->
+      
+
+      <!-- 2.3 -->
+      
+
+      <!-- 2.4 -->
+      
+
+      <!-- 2.5 -->
+      
+
+      <!-- 2.6 -->
+      
+
+      <!-- 2.7 -->
+<section id="overview">
+        <p>
+          <strong>Authentication</strong> is the process of confirming the identity of a user, device, or system by
+          validating provided credentials before granting access to a network or its resources. In information security,
+          authentication acts as the gatekeeper; before an entity can be granted authorization (permissions), it must
+          prove who it claims to be.
+        </p>
+        <p>Authentication:</p>
+        <ul>
+          <li>Prevents unauthorized usage of systems</li>
+          <li>Ensures secure interaction within a network environment</li>
+          <li>Maintains security, reliability, and trust within the system</li>
+        </ul>
+        <p>
+          This topic covers authentication <strong>factors</strong>, enterprise <strong>models</strong> (centralized,
+          SSO, federated), classic <strong>methods</strong>, factor-based types (SFA, 2FA, MFA), real-world
+          <strong>applications</strong>, and a catalog of <strong>digital authentication</strong> techniques.
+        </p>
+      </section>
+<section id="sec-2-1">
         <h2>2.1 The Factors of Authentication (The Foundation)</h2>
         <p>
           Every authentication model relies on one or more of the fundamental <strong>Authentication Factors</strong>.
@@ -159,10 +209,66 @@
           </svg>
           <figcaption id="factors-caption">The five categories of authentication factors used in modern systems.</figcaption>
         </figure>
+        <figure class="diagram" aria-labelledby="factor-model-flow-caption">
+          <svg viewBox="0 0 420 90" width="420" height="90" role="img" aria-label="Flow from factors to model to access decision">
+            <rect x="10" y="25" width="90" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="28" y="50" font-size="9" font-weight="600" fill="currentColor">Factors</text>
+            <path d="M100 45 H140" stroke="currentColor" stroke-width="1" marker-end="url(#arr2)"/>
+            <rect x="140" y="25" width="100" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="158" y="50" font-size="9" font-weight="600" fill="currentColor">Auth model</text>
+            <path d="M240 45 H280" stroke="currentColor" stroke-width="1" marker-end="url(#arr2)"/>
+            <rect x="280" y="25" width="120" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="300" y="50" font-size="9" font-weight="600" fill="currentColor">Grant / deny</text>
+            <defs><marker id="arr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="currentColor"/></marker></defs>
+          </svg>
+          <figcaption id="factor-model-flow-caption">Factors feed the authentication model; the model outputs an access decision.</figcaption>
+        </figure>
       </section>
+<section id="sec-2-5">
+        <h2>2.5 Authentication Methods</h2>
+        <p>
+          Authentication can be implemented using different techniques based on the type of credentials used. The
+          following are commonly used methods in practice.
+        </p>
 
-      <!-- 2.2 -->
-      <section id="sec-2-2">
+        <h3 id="auth-method-password">2.5.1 Password-Based Authentication</h3>
+        <p>
+          The most commonly used authentication technique. Each user is assigned a unique username and password.
+          During login, the entered password is compared with the stored (usually hashed) password. If credentials
+          match, access is granted; otherwise, access is denied.
+        </p>
+        <p>
+          Security depends on password strength and protection against attacks such as guessing, brute force, or
+          phishing. See also <a href="#digital-password">password authentication</a> in §2.7.
+        </p>
+
+        <h3 id="auth-method-physical">2.5.2 Physical Identification</h3>
+        <p>
+          Uses physical objects such as ID cards, badges, tokens, or smart cards. The system verifies possession of
+          the physical item to authenticate the user. Often combined with passwords or PINs to increase security.
+        </p>
+        <ul>
+          <li>Smart cards can store authentication data internally</li>
+          <li>Commonly used in ATMs, offices, and restricted access areas</li>
+          <li>Loss or theft of the card can pose a security risk</li>
+        </ul>
+
+        <h3 id="auth-method-biometric">2.5.3 Biometric Authentication</h3>
+        <p>
+          Relies on unique biological or behavioral characteristics. Eliminates the need to remember passwords or
+          carry physical tokens; difficult to replicate, but requires specialized hardware and accurate data capture.
+        </p>
+        <p><strong>Common biometric techniques:</strong></p>
+        <ul>
+          <li><strong>Facial recognition</strong> — analyzes facial features</li>
+          <li><strong>Fingerprint recognition</strong> — uses ridge patterns of fingers</li>
+          <li><strong>Hand geometry</strong> — measures shape and size of the hand</li>
+          <li><strong>Retinal pattern recognition</strong> — scans eye structure</li>
+          <li><strong>Signature verification</strong> — analyzes writing style</li>
+          <li><strong>Voice recognition</strong> — matches voice frequency patterns</li>
+        </ul>
+      </section>
+<section id="sec-2-2">
         <h2>2.2 Core Authentication Models</h2>
         <p>
           Different architectures manage identity verification based on organizational scale, security requirements, and
@@ -330,9 +436,7 @@
           decentralized network (like a blockchain) without ever revealing the underlying private data.
         </p>
       </section>
-
-      <!-- 2.3 -->
-      <section id="sec-2-3">
+<section id="sec-2-3">
         <h2>2.3 Comprehensive Comparison Matrix</h2>
         <div class="table-wrap">
           <table>
@@ -384,11 +488,29 @@
             </tbody>
           </table>
         </div>
-      </section>
 
-      <!-- 2.4 -->
-      <section id="sec-2-4">
+        <h3 id="when-to-use-model">When to use which authentication model</h3>
+        <div class="table-wrap">
+          <table>
+            <caption>Model selection guide</caption>
+            <thead>
+              <tr><th>Model</th><th>Use when</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Centralized</strong></td><td>Single org domain; LDAP/AD for all internal apps</td></tr>
+              <tr><td><strong>Decentralized</strong></td><td>Legacy per-app accounts; isolation between systems</td></tr>
+              <tr><td><strong>SSO</strong></td><td>Many internal apps; one login for employees</td></tr>
+              <tr><td><strong>Federated</strong></td><td>Partners log in with their own IdP (B2B, cloud SaaS)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+<section id="sec-2-4">
         <h2>2.4 Deep Dive: Evolution of Authentication Methods (From Static to Continuous)</h2>
+        <div class="callout canonical">
+          <div class="callout-title">Prerequisites</div>
+          <p>Read <a href="#sec-2-1">§2.1 Factors</a> and <a href="#sec-2-5">§2.5 Methods</a> before this section. Builds on <a href="#sec-2-2">§2.2 Models</a>.</p>
+        </div>
         <p>
           Now that we understand how identity architectures are structured (Centralized, SSO, Federated), let's look
           closely at the methods and operational logic used to actually execute authentication.
@@ -398,6 +520,18 @@
           context assessments that constantly track whether a user can be trusted.
         </p>
 
+        <figure class="diagram" aria-labelledby="mfa-ladder-caption">
+          <svg viewBox="0 0 400 120" width="400" height="120" role="img" aria-label="SFA vs 2FA vs MFA security ladder">
+            <rect x="20" y="70" width="100" height="35" rx="4" fill="none" stroke="currentColor" stroke-width="1"/>
+            <text x="48" y="92" font-size="9" fill="currentColor">SFA</text>
+            <rect x="150" y="45" width="100" height="60" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="178" y="80" font-size="9" fill="currentColor">2FA</text>
+            <rect x="280" y="15" width="100" height="90" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="308" y="65" font-size="9" font-weight="600" fill="currentColor">MFA</text>
+            <text x="30" y="25" font-size="8" fill="currentColor" opacity="0.85">▲ Stronger</text>
+          </svg>
+          <figcaption id="mfa-ladder-caption">Security generally increases from single-factor to multi-factor authentication.</figcaption>
+        </figure>
         <figure class="diagram" aria-labelledby="evolution-caption">
           <svg viewBox="0 0 480 100" width="480" height="100" role="img" aria-label="Evolution from static SFA to continuous authentication">
             <line x1="40" y1="50" x2="440" y2="50" stroke="currentColor" stroke-width="2"/>
@@ -418,6 +552,19 @@
           <figcaption id="evolution-caption">Authentication evolution: from one-time checks to continuous, context-aware validation.</figcaption>
         </figure>
 
+        <p>
+          Authentication systems are classified by how many <strong>independent factors</strong> verify identity.
+          Increasing factors improves security by reducing reliance on a single credential. See also
+          <a href="#sec-2-5">§2.5</a> for classic credential methods.
+        </p>
+
+        <figure class="diagram figure-photo" aria-labelledby="fig-auth-types-caption">
+          <img src="../../assets/images/topic-02/types-of-authentication.png"
+               alt="Types of authentication: Single-Factor, Two-Factor, and Multi-Factor Authentication"
+               width="640" height="auto" loading="lazy" decoding="async" />
+          <figcaption id="fig-auth-types-caption">Single-Factor, Two-Factor, and Multi-Factor Authentication.</figcaption>
+        </figure>
+
         <h3 id="auth-sfa">1. Single-Factor Authentication (SFA)</h3>
         <p>
           Single-Factor Authentication requires the user to provide exactly one proof of identity from any of the
@@ -431,6 +578,17 @@
           <strong>The Vulnerability:</strong> SFA represents a major security risk in modern systems. If an attacker steals,
           guesses, or phishes that single factor, they gain complete control over the account. There is no fallback defense.
         </p>
+        <p><strong>Advantages:</strong></p>
+        <ul>
+          <li>Simple and quick to use</li>
+          <li>Easy to implement and manage</li>
+          <li>Cost-effective for basic systems</li>
+        </ul>
+        <p><strong>Disadvantages:</strong></p>
+        <ul>
+          <li>Provides limited protection</li>
+          <li>Easily compromised through weak passwords, phishing, or brute-force attacks</li>
+        </ul>
 
         <h3 id="auth-2fa">2. Two-Factor Authentication (2FA)</h3>
         <p>
@@ -459,6 +617,16 @@
             mobile app. The user simply taps "Approve".
           </li>
         </ul>
+        <p><strong>Advantages:</strong></p>
+        <ul>
+          <li>Significantly improved security over SFA</li>
+          <li>Reduces the impact of stolen or leaked passwords</li>
+        </ul>
+        <p><strong>Disadvantages:</strong></p>
+        <ul>
+          <li>Adds an extra step during login</li>
+          <li>Depends on additional devices or network connectivity</li>
+        </ul>
 
         <h3 id="auth-mfa">3. Multi-Factor Authentication (MFA)</h3>
         <p>
@@ -472,6 +640,16 @@
           bypassing it requires an attacker to simultaneously compromise a user's digital memory, steal their physical
           hardware device, and spoof their unique biological traits.
         </p>
+        <p><strong>Advantages:</strong></p>
+        <ul>
+          <li>Strong protection against unauthorized access</li>
+          <li>Minimizes risks from credential compromise</li>
+        </ul>
+        <p><strong>Disadvantages:</strong></p>
+        <ul>
+          <li>More complex to deploy and manage</li>
+          <li>Higher cost and possible dependency on third-party services</li>
+        </ul>
 
         <h3 id="auth-rba">4. Risk-Based Authentication (RBA)</h3>
         <p>
@@ -575,8 +753,235 @@
           </table>
         </div>
       </section>
+<section id="sec-2-6">
+        <h2>2.6 Applications of Authentication</h2>
+        <p>
+          Authentication is widely used in computer networks and systems to ensure secure, controlled access to
+          resources. Common applications include:
+        </p>
+        <ul>
+          <li>
+            <strong>User login systems:</strong> Verifies identity in operating systems, websites, and applications
+            before access is granted.
+          </li>
+          <li>
+            <strong>Banking and financial systems:</strong> Secures ATMs, mobile banking, and online transactions using
+            PINs, OTPs, and biometric authentication.
+          </li>
+          <li>
+            <strong>Network access control:</strong> Restricts access to private and enterprise networks to authorized
+            users and devices only.
+          </li>
+          <li>
+            <strong>Email and cloud services:</strong> Protects sensitive user data using password-based and multi-factor
+            authentication.
+          </li>
+          <li>
+            <strong>Enterprise and organizational systems:</strong> Controls access to internal servers, applications,
+            and confidential organizational resources.
+          </li>
+        </ul>
+      </section>
+<section id="sec-2-7">
+        <h2>2.7 Types of Digital Authentication</h2>
+        <div class="callout canonical">
+          <div class="callout-title">Catalog section</div>
+          <p>Reference catalog — read after <a href="#sec-2-2">§2.2 Models</a>, <a href="#sec-2-3">§2.3 Matrix</a>, and <a href="#sec-2-4">§2.4 Evolution</a>. Overlaps are intentional for lookup.</p>
+        </div>
+        <p>
+          <strong>Digital authentication</strong> is the process of confirming the legitimacy of a user or device accessing
+          digital resources. It builds trust in identities supplied digitally to an information system and acts as the
+          first line of protection for organizational apps, data, and services.
+        </p>
+        <p>
+          In the modern world, virtually every organization, system, network, website, or server requires authentication.
+          Cybercriminals use increasingly sophisticated methods; simple password credentials alone are often insufficient.
+          Organizations implement layered security, balancing <strong>usability</strong> and <strong>security</strong> when
+          choosing techniques.
+        </p>
 
-      <footer class="page-footer">
+        <h3 id="digital-sfa">2.7.1 Single-Factor Authentication</h3>
+        <p>
+          A single credential (password, PIN, or security questions) confirms identity. Examples: username/password,
+          numeric PIN, predetermined security questions. User-friendly and simple to deploy, but the least secure—a single
+          compromised credential can lead to account takeover. See <a href="#auth-sfa">§2.4 SFA</a>.
+        </p>
+
+        <h3 id="digital-2fa">2.7.2 Two-Factor Authentication</h3>
+        <p>
+          Requires two distinct forms of identification—typically something you know (password) and something you have
+          (OTP, token, smart card). Second-factor examples: email/SMS OTP, security questions, biometric scans, USB
+          hardware tokens. Blocks most remote attacks even if the password leaks. See <a href="#auth-2fa">§2.4 2FA</a>.
+        </p>
+
+        <h3 id="digital-mfa">2.7.3 Multi-Factor Authentication</h3>
+        <p>
+          Requires two or more login credentials from different factor categories. May combine passwords, devices, and
+          biometrics; supports context-based and behavioral checks. See <a href="#auth-mfa">§2.4 MFA</a>.
+        </p>
+
+        <h3 id="digital-password">2.7.4 Password Authentication</h3>
+        <p>
+          The user enters a unique ID and secret key compared against stored credentials. Passwords combine letters,
+          numbers, and symbols known only to the legitimate user.
+        </p>
+        <p><strong>Best practices:</strong></p>
+        <ul>
+          <li>Minimum of 8 characters (ideally no more than 12 in some policies)</li>
+          <li>Mix of uppercase, lowercase, symbols, and numerals</li>
+          <li>Avoid reuse across sites; use a password manager where possible</li>
+        </ul>
+
+        <h3 id="digital-passwordless">2.7.5 Passwordless Authentication</h3>
+        <p>
+          Authenticates users without a traditional password—often via ownership of a secondary device/account or a
+          biometric trait (fingerprint, face). Reduces phishing and password-management cost; improves user experience while
+          increasing security when implemented correctly.
+        </p>
+
+        <h3 id="digital-certificate">2.7.6 Certificate-Based Authentication</h3>
+        <p>
+          Digital certificates use cryptography (PKI) to authenticate users, devices, and systems.
+        </p>
+        <ul>
+          <li><strong>Smart cards / USB tokens:</strong> Store certificates in tamper-resistant hardware</li>
+          <li><strong>Machine certificates:</strong> Authenticate devices joining networks</li>
+          <li><strong>Mobile device certificates:</strong> Verify users on phones accessing corporate resources</li>
+        </ul>
+
+        <h3 id="digital-adaptive">2.7.7 Adaptive Authentication</h3>
+        <p>
+          Adjusts requirements based on context—IP, device, location, time of access. Combines static policies with
+          machine learning to balance security and user experience. See <a href="#auth-adaptive">§2.4 Adaptive Authentication</a>.
+        </p>
+
+        <h3 id="digital-saml">2.7.8 SAML and Authentication Protocols</h3>
+        <p>
+          <strong>Security Assertion Markup Language (SAML)</strong> is a primary protocol for web-based authentication and
+          authorization, often used with Single Sign-On. Related protocols include:
+        </p>
+        <ul>
+          <li><strong>LDAP</strong> (Lightweight Directory Access Protocol)</li>
+          <li><strong>SAML</strong> (Security Assertion Markup Language)</li>
+          <li><strong>RADIUS</strong> (Remote Authentication Dial-In User Service)</li>
+          <li><strong>OAuth</strong> (Open Authorization)</li>
+        </ul>
+        <p>Enterprise SSO details: <a href="#model-sso">§2.2 Single Sign-On</a>.</p>
+
+        <h3 id="digital-biometric">2.7.9 Biometric Authentication (Digital)</h3>
+        <p>
+          Uses unique biological traits that are difficult to duplicate. Techniques include iris recognition, fingerprint
+          authentication, palm-vein patterns, and voice recognition compared against stored templates. See also
+          <a href="#auth-method-biometric">§2.5.3</a>.
+        </p>
+
+        <h3 id="digital-behavioral">2.7.10 Behavioral Authentication</h3>
+        <p>
+          Measures distinct patterns in how a person uses devices (typing, mouse movement, touch). Less intrusive because
+          users need not perform extra steps, but behavioral biometrics are still maturing for widespread deployment.
+          <strong>CAPTCHA</strong> (see §2.7.16) distinguishes human from automated input rather than verifying identity.
+        </p>
+
+        <h3 id="digital-token">2.7.11 Token Authentication</h3>
+        <p>
+          A form of two-factor authentication: first factor is something you know (password/PIN); second is a hardware or
+          software token generating a frequently changing code (often every 60 seconds). Hardware tokens are strong for
+          high-security environments; benefits include improved cross-platform protection and reduced credential theft risk.
+        </p>
+
+        <h3 id="digital-device">2.7.12 Device Recognition</h3>
+        <p>
+          Authorizes known devices and then their users. Endpoint management platforms register hardware and may grant
+          faster access to trusted devices—common in <strong>BYOD</strong> (Bring Your Own Device) policies. Some apps skip
+          repeated prompts once a device is recognized as secure.
+        </p>
+
+        <h3 id="digital-oob">2.7.13 Out-of-Band Authentication</h3>
+        <p>
+          A 2FA variant requiring verification over a separate channel (e.g., mobile network vs. internet connection).
+          Used heavily in banking and high-security enterprises. Lower deployment cost and minimal user friction while
+          keeping communications on a distinct channel from the login session.
+        </p>
+
+        <h3 id="digital-api">2.7.14 API Authentication</h3>
+        <p>
+          APIs secure web services with additional protection layers. Common approaches:
+        </p>
+        <ul>
+          <li><strong>HTTP Basic Authentication:</strong> Username and password in the request (no cookies/session IDs)</li>
+          <li><strong>API keys:</strong> Identify the origin of requests; keys linked to tokens on registration</li>
+          <li><strong>OAuth:</strong> Widely used for API auth; supports authorization and authentication with scoped access</li>
+        </ul>
+
+        <h3 id="digital-sso">2.7.15 Single Sign-On (SSO)</h3>
+        <p>
+          One set of credentials accesses multiple applications. Popular approaches:
+        </p>
+        <ul>
+          <li><strong>SAML 2.0</strong> — XML-based SSO between identity providers and service providers</li>
+          <li><strong>OAuth 2.0</strong> — Authorization flows for web, mobile, and desktop</li>
+          <li><strong>OpenID Connect (OIDC)</strong> — Identity layer on OAuth 2.0</li>
+        </ul>
+        <p>Architecture and flows: <a href="#model-sso">§2.2</a>, <a href="#auth-federated-method">§2.4 Federated</a>.</p>
+
+        <h3 id="digital-captcha">2.7.16 CAPTCHAs</h3>
+        <p>
+          <strong>CAPTCHA</strong> (Completely Automated Public Turing test to tell Computers and Humans Apart) helps
+          distinguish humans from bots. Uses include:
+        </p>
+        <ul>
+          <li><strong>Poll accuracy</strong> — reduce automated vote rigging</li>
+          <li><strong>Service registration</strong> — limit fake account creation</li>
+          <li><strong>Ticketing</strong> — prevent scalpers from bulk-buying tickets</li>
+          <li><strong>Comments and forums</strong> — reduce spam and bot flooding</li>
+        </ul>
+
+        <h3 id="digital-vault">2.7.17 Vault Authentication Methods</h3>
+        <p>
+          Validates user or machine identity against internal or external systems. Vaults often support protocols such as
+          <strong>LDAP</strong>, <strong>AppRole</strong>, and <strong>GitHub</strong> authentication for secrets management.
+        </p>
+
+        <h3 id="digital-wireless">2.7.18 Wireless Authentication Methods</h3>
+        <ul>
+          <li>
+            <strong>WEP (Wired Equivalent Privacy):</strong> Early 802.11 method aiming to make wireless as secure as wired;
+            supports open and shared-key authentication (now considered weak).
+          </li>
+          <li>
+            <strong>802.1X / EAP:</strong> Restricts network access to clients that authenticate via a port-based control
+            standard; used with enterprise Wi-Fi and RADIUS backends.
+          </li>
+        </ul>
+
+        <h3 id="digital-select">2.7.19 How to Select the Correct Authentication Technique</h3>
+        <p>Consider the following when choosing a method for your organization:</p>
+        <ul>
+          <li><strong>Risk profile:</strong> Sensitive data or high-risk transactions (e.g., finance) need stronger methods such as MFA.</li>
+          <li><strong>User-friendliness:</strong> Overly complex processes encourage workarounds (written passwords, shared accounts).</li>
+          <li><strong>Convenience:</strong> Processes should be completable reliably; frequent device failures frustrate staff.</li>
+          <li><strong>Customer satisfaction:</strong> Users want strong protection without excessive friction.</li>
+          <li><strong>Privacy:</strong> Authentication should not unnecessarily compromise personal privacy.</li>
+        </ul>
+        <p>
+          <strong>Conclusion:</strong> Digital authentication is a cornerstone of modern cybersecurity. Combining passwords,
+          biometrics, multi-factor methods, SSO, and context-aware controls strengthens the security posture of any digital
+          environment as threats continue to evolve.
+        </p>
+      </section>
+
+      <div class="callout exam" id="key-takeaways">
+        <div class="callout-title">Key takeaways — Topic 2</div>
+        <ul>
+          <li>Authentication verifies identity before authorization grants access.</li>
+          <li>Five factors: knowledge, possession, inherence, behavioral, location/context.</li>
+          <li>Models: centralized, decentralized, SSO, federated, SSI — pick by org structure.</li>
+          <li>SFA &lt; 2FA &lt; MFA; evolution adds risk-based, adaptive, and continuous auth.</li>
+          <li>§2.7 is a catalog of digital techniques — cross-reference §2.4 for evolution detail.</li>
+        </ul>
+      </div>
+
+<footer class="page-footer">
         <a href="01-introduction-to-info-sec.html">← Topic 1</a>
         <a href="../index.html">Book index</a>
         <a href="../../index.html">All books</a>

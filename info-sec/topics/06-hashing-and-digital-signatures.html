@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("infosec-notes-theme") !== "light") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+  <title>Topic 6 — Hashing and Digital Signatures</title>
+  <link rel="stylesheet" href="../../assets/css/notes.css">
+  <script src="../../assets/js/theme.js" defer></script>
+</head>
+<body>
+  <div class="page-wrapper has-toc-nav">
+    <aside class="sidebar toc" id="sidebar-nav">
+      <p class="toc-title">On this page</p>
+      <nav aria-label="Table of contents">
+        <ul>
+          <li><a href="#reading-path">Reading order</a></li>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#sec-6-1">6.1 Hash operational architecture</a></li>
+          <li><a href="#sec-6-2">6.2 Three properties of secure hashing</a></li>
+          <li><a href="#sec-6-3">6.3 Birthday paradox</a></li>
+          <li><a href="#sec-6-4">6.4 MAC vs HMAC</a></li>
+          <li><a href="#sec-6-5">6.5 Digital signatures</a></li>
+          <li><a href="#sec-6-6">6.6 RSA, DSA, ECDSA</a></li>
+          <li><a href="#sec-6-7">6.7 Summary matrix</a></li>
+          <li><a href="#sec-6-8">6.8 Hands-on (OpenSSL)</a></li>
+          <li><a href="#sec-6-9">6.9 Password storage &amp; salted hashes</a></li>
+          <li><a href="#sec-6-10">6.10 Digital signatures (article depth)</a></li>
+          <li><a href="#sec-6-11">6.11 Digital certificates</a></li>
+          <li><a href="#sec-6-12">6.12 Hash vs encryption vs encoding</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="site-header">
+        <h1>6. Hashing and Digital Signatures</h1>
+        <p class="topic-meta">
+          <a href="../../index.html">← All books</a>
+          · <a href="../index.html">Book index</a>
+          · <a href="05-advanced-cryptography.html">Topic 5</a>
+        </p>
+        <div class="header-actions">
+          <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="sidebar-nav" aria-label="Open page navigation">
+            <span class="nav-toggle-icon" aria-hidden="true">
+              <span class="nav-toggle-bar"></span>
+              <span class="nav-toggle-bar"></span>
+              <span class="nav-toggle-bar"></span>
+            </span>
+            <span class="nav-toggle-label">Menu</span>
+          </button>
+          <button type="button" class="theme-toggle" aria-pressed="false">
+            <span class="theme-toggle-label">Dark mode</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="reading-path" id="reading-path">
+        <div class="reading-path-title">Recommended reading order</div>
+        <ol>
+          <li><a href="#sec-6-1">6.1</a> Hash algorithms (MD5 → SHA-3) and evolution</li>
+          <li><a href="#sec-6-2">6.2</a> Three security properties + avalanche effect</li>
+          <li><a href="#sec-6-3">6.3</a> Birthday paradox and bit-strength math</li>
+          <li><a href="#sec-6-4">6.4</a> MAC and HMAC (shared secret authenticity)</li>
+          <li><a href="#sec-6-5">6.5</a> Digital signatures (sign → verify workflow)</li>
+          <li><a href="#sec-6-6">6.6</a> RSA, DSA, ECDSA implementations</li>
+          <li><a href="#sec-6-7">6.7</a> Summary matrix — hash vs HMAC vs signature</li>
+          <li><a href="#sec-6-8">6.8</a> OpenSSL hands-on · <a href="#sec-6-9">6.9</a> Password hashing</li>
+          <li><a href="#sec-6-10">6.10</a> Digital signatures — components, assurances, applications</li>
+          <li><a href="#sec-6-11">6.11</a> Digital certificates (CA, X.509)</li>
+          <li><a href="#sec-6-12">6.12</a> Hashing vs encryption vs encoding</li>
+        </ol>
+        <p class="topic-meta">Prerequisite skim: <a href="05-advanced-cryptography.html#sec-5-11">Topic 5 §5.11</a> (hash intro with diagrams).</p>
+      </div>
+
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>
+          This topic is a dedicated deep dive into <strong>cryptographic hash functions</strong>,
+          <strong>Message Authentication Codes (MACs)</strong>, <strong>HMAC</strong>, and
+          <strong>digital signatures</strong>. A brief introduction to hashing also appears in
+          <a href="05-advanced-cryptography.html#sec-5-11">Topic 5 — Section 5.11</a>. Here you get the full operational architecture,
+          mathematical foundations, birthday-paradox analysis, enterprise comparison matrix, hands-on commands,
+          <strong>digital certificates</strong>, and a full comparison of <strong>hashing vs encryption vs encoding</strong>.
+        </p>
+      </section>
+
+      <section id="sec-6-1">
+        <h2>6.1 Cryptographic Hash Functions: Operational Architecture</h2>
+        <p>
+          As established briefly in the cryptography overview, a <strong>Cryptographic Hash Function</strong>—often referred to as a mathematical &quot;one-way engine&quot;—is an algorithm that takes an input string of any arbitrary, variable length and transforms it into a fixed-length, immutable output string of bits or characters. This output is universally known as the <strong>Hash Value</strong>, <strong>Message Digest</strong>, <strong>Checksum</strong>, or <strong>Digital Fingerprint</strong>.
+        </p>
+
+        <h3>The Mathematical Engine: MD5, SHA-1, SHA-2, and SHA-3</h3>
+        <pre class="diagram-ascii" aria-label="Evolution of hashing algorithms">┌────────────────────────────────────────────────────────┐
+│               The Evolution of Hashing                 │
+├────────────────────────────────────────────────────────┤
+│ MD5 (Broken, 128-bit)                                  │
+│   └──► SHA-1 (Broken, 160-bit)                         │
+│         └──► SHA-2 (Secure, 256/512-bit, Block Chaining) │
+│               └──► SHA-3 (Secure, Keccak Sponge Engine)│
+└────────────────────────────────────────────────────────┘</pre>
+
+        <p><strong>MD5 (Message Digest 5):</strong> Designed by Ronald Rivest, MD5 produces a 128-bit hash value. It was once the global standard for file integrity verification and password storage. However, cryptanalysts uncovered severe structural flaws that allow for Collision Attacks (generating two completely different files with the exact same MD5 hash) in fractions of a second. It is now completely obsolete and strictly prohibited in professional security environments.</p>
+        <figure class="diagram figure-photo" aria-labelledby="fig-md5-caption">
+          <img src="../../assets/images/topic-05/md5-hashing.png"
+               alt="MD5 hashing: identical input always produces the same fixed-length digest"
+               width="640" height="auto" loading="lazy" decoding="async" />
+          <figcaption id="fig-md5-caption">MD5 — deterministic one-way hashing of input to a 128-bit digest.</figcaption>
+        </figure>
+
+        <p><strong>SHA-1 (Secure Hash Algorithm 1):</strong> Designed by the NSA, SHA-1 produces a 160-bit digest. Like MD5, it has been mathematically broken through practical collision exploits (e.g., the SHAttered attack). It is deprecated across all modern web browsers and security protocols.</p>
+        <figure class="diagram figure-photo" aria-labelledby="fig-sha1-gen-caption">
+          <img src="../../assets/images/topic-05/sha1-generator.png"
+               alt="SHA-1 hash generator example output"
+               width="640" height="auto" loading="lazy" decoding="async" />
+          <figcaption id="fig-sha1-gen-caption">SHA-1 generator — sample input converted to a 40-character hexadecimal digest.</figcaption>
+        </figure>
+        <figure class="diagram figure-photo" aria-labelledby="fig-sha1-block-caption">
+          <img src="../../assets/images/topic-05/sha1-block-diagram.png"
+               alt="SHA-1 algorithm block diagram"
+               width="640" height="auto" loading="lazy" decoding="async" />
+          <figcaption id="fig-sha1-block-caption">SHA-1 block diagram — message padding, rounds, and round-key generation.</figcaption>
+        </figure>
+
+        <p><strong>SHA-2 (Secure Hash Algorithm 2):</strong> Also developed by the NSA, SHA-2 is a family of highly secure hash functions consisting of different digest sizes, most notably SHA-256 and SHA-512. It utilizes a complex structural design called the Merkle-Damgård construction, which processes data in successive blocks. It is the current industry workhorse, driving everything from HTTPS certificates to cryptocurrency ledgers.</p>
+        <p><strong>Example (SHA-256):</strong></p>
+        <ul>
+          <li>Data: <code>geeksforgeeks</code></li>
+          <li>SHA-256: <code>f8d59362da74ffe833332dc20508f12de6da6a9298c98b3b42873e7298fced78</code></li>
+        </ul>
+        <figure class="diagram figure-photo" aria-labelledby="fig-sha256-caption">
+          <img src="../../assets/images/topic-05/sha256-diagram.png"
+               alt="SHA-256: plaintext through hash function to fixed-length digest"
+               width="640" height="auto" loading="lazy" decoding="async" />
+          <figcaption id="fig-sha256-caption">SHA-256 converts arbitrary input into a fixed-length hash digest.</figcaption>
+        </figure>
+
+        <p><strong>SHA-3 (Secure Hash Algorithm 3):</strong> Released by NIST, SHA-3 does not rely on the Merkle-Damgård construction. Instead, it uses an entirely different internal mathematical design called the Keccak Permutation Sponge Engine. Because its underlying architecture is completely different from SHA-2, it serves as a secure backup; if an advanced cryptanalytic breakthrough ever breaks SHA-2, SHA-3 will remain completely unaffected.</p>
+      </section>
+
+      <section id="sec-6-2">
+        <h2>6.2 The Three Properties of Secure Hashing (Mathematical Foundations)</h2>
+        <p>For a mathematical function to be classified as a secure cryptographic hash, it must satisfy three strict computational barriers:</p>
+
+        <h3>1. Pre-Image Resistance (The One-Way Property)</h3>
+        <p>Given any arbitrary hash digest <em>y</em>, it must be computationally impossible for an adversary to reverse the math and find the original plaintext input string <em>x</em> such that:</p>
+        <div class="formula">Hash(x) = y</div>
+        <p>The system must act as a true one-way street. The only way to find <em>x</em> without authorization should be an exhaustive brute-force search across the entire input space.</p>
+
+        <h3>2. Second Pre-Image Resistance (Weak Collision Resistance)</h3>
+        <p>Given a specific, known input string <em>x₁</em> and its resulting hash digest Hash(<em>x₁</em>), it must be computationally impossible to find a completely different, independent input string <em>x₂</em> such that their hashes are identical:</p>
+        <div class="formula">Hash(x₁) = Hash(x₂) &nbsp; where &nbsp; x₁ ≠ x₂</div>
+        <p>This ensures an attacker cannot intercept a known transaction file and swap it with a malicious file that mimics the original hash fingerprint.</p>
+
+        <h3>3. Collision Resistance (Strong Collision Resistance)</h3>
+        <p>It must be computationally impossible to find any two arbitrary, random, and completely distinct input strings <em>x₁</em> and <em>x₂</em> anywhere in the universe that yield the exact same output digest:</p>
+        <div class="formula">Hash(x₁) = Hash(x₂)</div>
+        <p><strong>The Distinction:</strong> In Second Pre-Image Resistance, one input is locked and fixed from the start. In Collision Resistance, the attacker has total freedom to hunt for any pair of inputs that match. Breaking collision resistance is much easier due to a mathematical phenomenon known as the Birthday Paradox.</p>
+
+        <h3>Properties at a glance</h3>
+        <div class="table-wrap">
+          <table>
+            <caption>Comparing the three hash security properties</caption>
+            <thead>
+              <tr><th>Property</th><th>Attacker goal</th><th>Fixed input?</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Pre-image resistance</strong></td><td>Hash → find any original message</td><td>Digest fixed</td></tr>
+              <tr><td><strong>Second pre-image</strong></td><td>Given <em>x₁</em>, find different <em>x₂</em> with same hash</td><td>Yes — <em>x₁</em> locked</td></tr>
+              <tr><td><strong>Collision resistance</strong></td><td>Find any two messages that collide</td><td>No — hunt any pair</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Avalanche effect</h3>
+        <p>
+          A secure hash must exhibit the <strong>avalanche effect</strong>: a tiny change to the input (one character, case change, or extra period) must produce a digest that looks completely unrelated to the original output. This property supports integrity checking — tampering is immediately visible when comparing digests.
+        </p>
+      </section>
+
+      <section id="sec-6-3">
+        <h2>6.3 Understanding the Birthday Paradox and Hashing Strength</h2>
+        <p>The Birthday Paradox is a fundamental probability concept that has a massive impact on the security parameters of hash functions.</p>
+        <p><strong>The Core Concept:</strong> How many people do you need in a room to have a 50% chance that at least two people share the exact same birthday? While a non-mathematician might guess half of 365 (182), the true mathematical answer is just <strong>23 people</strong>.</p>
+        <p><strong>The Math:</strong> We are not looking for someone to match a specific birthday; we are looking for any two people in the room to match each other. The number of unique pairs among <em>n</em> people grows exponentially as:</p>
+        <div class="formula">Pairs = n(n − 1) / 2</div>
+
+        <h3>Impact on Cryptanalysis and Hash Bit Length</h3>
+        <p>This exact mathematical rule applies directly to hash collisions. An attacker does not need to crack a specific hash; they just need to find two random inputs that clash.</p>
+        <p>Because of the Birthday Paradox, the mathematical strength of a hash function against a collision attack is cut exactly in half relative to its bit length.</p>
+        <ul>
+          <li>If a hash function outputs an <em>n</em>-bit digest, a brute-force attack to find a Pre-Image (a specific match) requires 2<sup>n</sup> computational operations.</li>
+          <li>However, finding a Collision (any arbitrary match) only requires: 2<sup>n/2</sup> operations.</li>
+        </ul>
+        <div class="formula">Collision work ≈ 2<sup>n/2</sup></div>
+
+        <div class="callout exam">
+          <div class="callout-title">Exam tip — Birthday Paradox</div>
+          <p>Collision attacks cost about <strong>2<sup>n/2</sup></strong>, not 2<sup>n</sup>. Halving the effective security bit length is why MD5 (128-bit → ~64-bit collision strength) failed.</p>
+        </div>
+
+        <h3>Real-World Security Blueprint</h3>
+        <p><strong>Why MD5 (128-bit) Fell:</strong> Its collision security is cut down to 2<sup>128/2</sup> = 2<sup>64</sup>. A computing cluster can execute 2<sup>64</sup> operations very quickly, making MD5 highly vulnerable.</p>
+        <p><strong>Why SHA-256 is Secure:</strong> Its collision security boundary drops to 2<sup>256/2</sup> = 2<sup>128</sup>. An execution pool of 2<sup>128</sup> operations is safely out of reach for modern computing clusters, keeping SHA-256 structurally secure.</p>
+
+        <figure class="diagram diagram-lg" aria-labelledby="fig-birthday-caption">
+          <svg viewBox="0 0 480 100" width="480" height="100" role="img" aria-label="Pre-image vs collision attack cost">
+            <text x="20" y="22" font-size="10" font-weight="600" fill="currentColor">n-bit hash output</text>
+            <rect x="20" y="30" width="200" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="35" y="48" font-size="9" fill="currentColor">Pre-image attack ≈ 2ⁿ</text>
+            <rect x="260" y="30" width="200" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="275" y="48" font-size="9" font-weight="600" fill="currentColor">Collision attack ≈ 2ⁿ/²</text>
+            <text x="20" y="78" font-size="8" fill="currentColor" opacity="0.85">Birthday paradox halves effective collision strength</text>
+          </svg>
+          <figcaption id="fig-birthday-caption">Collision finding costs about 2<sup>n/2</sup>, not 2<sup>n</sup> — critical for choosing hash size.</figcaption>
+        </figure>
+      </section>
+
+      <section id="sec-6-4">
+        <h2>6.4 Message Authentication Codes (MAC) vs. HMAC</h2>
+        <p>Standard hashing protects against accidental corruption or data loss, but it fails if an active attacker intercepts the communication. If an attacker intercepts a file and modifies its contents, they can simply compute a new SHA-256 hash for the altered file and replace the original hash. The recipient's system will check the new file against the new hash and find no errors. To stop this type of tampering, systems use Message Authentication Codes (MACs).</p>
+
+        <pre class="diagram-ascii" aria-label="Standard hashing vs HMAC architecture">Standard Hashing:   [Plaintext Message] ──► [Hash Engine] ──► [Fixed Hash Digest]
+
+HMAC Architecture:  [Plaintext Message] ──┐
+                                          ├──► [Hash Engine] ──► [Cryptographic HMAC]
+                    [Secret Shared Key] ──┘</pre>
+
+        <figure class="diagram diagram-lg" aria-labelledby="fig-hmac-svg-caption">
+          <svg viewBox="0 0 640 120" width="640" height="120" role="img" aria-label="HMAC uses message and secret key">
+            <text x="20" y="28" font-size="11" font-weight="600" fill="currentColor">Message M</text>
+            <rect x="20" y="36" width="100" height="36" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="20" y="88" font-size="11" font-weight="600" fill="currentColor">Secret key K</text>
+            <rect x="20" y="96" width="100" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M120 54 H200" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M70 96 V72 H200 V54" stroke="currentColor" stroke-width="1.2" fill="none"/>
+            <rect x="200" y="36" width="120" height="36" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+            <text x="218" y="58" font-size="10" font-weight="600" fill="currentColor">Hash (HMAC)</text>
+            <path d="M320 54 H400" stroke="currentColor" stroke-width="1.2"/>
+            <text x="410" y="58" font-size="10" fill="currentColor">HMAC tag</text>
+          </svg>
+          <figcaption id="fig-hmac-svg-caption">HMAC combines a secret key with the message before hashing.</figcaption>
+        </figure>
+
+        <h3>1. Message Authentication Codes (MAC)</h3>
+        <p>A MAC is a security token that provides both Integrity and Data Origin Authentication. It ensures that data was not altered during transit and proves that the sender is authentic. Unlike a standard hash, computing a MAC requires two inputs: the plaintext message and a Secret Shared Key known only to the sender and the receiver.</p>
+
+        <h3>2. HMAC (Hash-Based Message Authentication Code)</h3>
+        <p>An HMAC is a specific, highly secure implementation of a MAC that wraps around a standard cryptographic hash function (like SHA-256).</p>
+        <p><strong>The Nested Construction:</strong> You cannot simply glue a key to a message and hash it (Hash(Key ∥ Message)), because that structure is vulnerable to a cryptanalytic vulnerability called a <strong>Length-Extension Attack</strong>. To prevent this, HMAC uses a nested, two-pass mathematical design:</p>
+        <div class="callout exam">
+          <div class="callout-title">Length-extension attack (why nested HMAC matters)</div>
+          <p>With Merkle-Damgård hashes (SHA-256), knowing Hash(secret ∥ message) can let an attacker append data and predict a valid extended hash <em>without knowing the secret</em>. HMAC’s inner/outer hash layers block this — never replace HMAC with raw Hash(key ∥ msg).</p>
+        </div>
+        <div class="formula">HMAC(K, M) = Hash((K ⊕ opad) ∥ Hash((K ⊕ ipad) ∥ M))</div>
+        <p>Where <em>K</em> is the secret key, <em>M</em> is the message, <em>ipad</em> is an inner padding constant, and <em>opad</em> is an outer padding constant.</p>
+        <p><strong>The Verification Flow:</strong> The sender computes the HMAC using the shared key and sends it alongside the message. The recipient takes the incoming message, runs it through the exact same HMAC math using their copy of the shared secret key, and compares their result with the incoming HMAC token. If they match, the recipient is assured the message is authentic and unaltered.</p>
+
+        <div class="callout exam">
+          <div class="callout-title">Exam tip — HMAC</div>
+          <p>Never use Hash(key ∥ message) alone — <strong>length-extension attacks</strong> break that. Use nested HMAC construction.</p>
+        </div>
+      </section>
+
+      <section id="sec-6-5">
+        <h2>6.5 Digital Signatures: The Cryptographic Mechanics</h2>
+        <p>A Digital Signature is an asymmetric cryptographic mechanism that binds an individual's or system's identity to a specific digital asset or data payload. While an HMAC relies on a symmetric shared key, a Digital Signature relies on an Asymmetric Key Pair.</p>
+        <p>Digital Signatures provide three critical security guarantees: <strong>Integrity</strong>, <strong>Authentication</strong>, and <strong>Non-Repudiation</strong> (which an HMAC cannot provide, since both parties share the exact same key).</p>
+
+        <figure class="diagram diagram-lg" aria-labelledby="fig-sign-flow-caption">
+          <svg viewBox="0 0 640 200" width="640" height="200" role="img" aria-label="Digital signature sign and verify paths">
+            <text x="20" y="22" font-size="11" font-weight="600" fill="currentColor">Sign (Alice)</text>
+            <text x="40" y="48" font-size="9" fill="currentColor">M → Hash → H</text>
+            <text x="40" y="64" font-size="9" fill="currentColor">Encrypt H with K_priv → S</text>
+            <text x="40" y="80" font-size="9" fill="currentColor">Send M + S</text>
+            <text x="320" y="22" font-size="11" font-weight="600" fill="currentColor">Verify (Bob)</text>
+            <text x="340" y="48" font-size="9" fill="currentColor">Hash(M) → H₁</text>
+            <text x="340" y="64" font-size="9" fill="currentColor">Decrypt S with K_pub → H₂</text>
+            <text x="340" y="80" font-size="9" fill="currentColor">H₁ == H₂ ? valid</text>
+            <rect x="20" y="100" width="280" height="80" rx="4" fill="none" stroke="currentColor" stroke-width="1"/>
+            <rect x="320" y="100" width="280" height="80" rx="4" fill="none" stroke="currentColor" stroke-width="1"/>
+          </svg>
+          <figcaption id="fig-sign-flow-caption">Digital signature — hash-then-sign; verify by comparing digests.</figcaption>
+        </figure>
+
+        <h3>The Complete Step-by-Step Execution Workflow</h3>
+        <h4>Phase 1: Generation (Signing) — Executed by Sender (Alice)</h4>
+        <ol>
+          <li>Alice writes a plaintext message (<em>M</em>).</li>
+          <li>Alice passes the message through a secure hash function (e.g., SHA-256) to generate a unique, fixed-size Message Digest (<em>H</em>). <div class="formula">H = Hash(M)</div></li>
+          <li>Alice encrypts this message digest using her unique, highly guarded Private Key (K<sub>priv_Alice</sub>). The output of this operation is the Digital Signature (<em>S</em>). <div class="formula">S = E<sub>K_priv_Alice</sub>(H)</div></li>
+          <li>Alice attaches the digital signature (<em>S</em>) to the original plaintext message (<em>M</em>) and sends the combined bundle across the network to Bob.</li>
+        </ol>
+
+        <h4>Phase 2: Verification — Executed by Receiver (Bob)</h4>
+        <ol>
+          <li>Bob receives the plaintext message (<em>M</em>) and the attached digital signature (<em>S</em>).</li>
+          <li><strong>First Path:</strong> Bob takes the received plaintext message (<em>M</em>) and passes it through the exact same hash function (SHA-256) used by Alice to generate a Local Digest (<em>H₁</em>).</li>
+          <li><strong>Second Path:</strong> Bob takes the incoming digital signature (<em>S</em>) and decrypts it using Alice's openly available Public Key (K<sub>pub_Alice</sub>). This reveals the Original Digest (<em>H₂</em>) that Alice computed. <div class="formula">H₂ = D<sub>K_pub_Alice</sub>(S)</div></li>
+          <li><strong>The Evaluation:</strong> Bob compares the local digest (<em>H₁</em>) against the decrypted original digest (<em>H₂</em>).
+            <ul>
+              <li>If H₁ == H₂, the signature is perfectly valid. Bob knows the data was not altered (Integrity) and that it was definitely created by Alice (Authentication and Non-Repudiation).</li>
+              <li>If even a single character in the message was modified, or if a different private key was used, the hashes will not match, and the signature is rejected.</li>
+            </ul>
+          </li>
+        </ol>
+        <p>TLS/HTTPS certificate chains and PKIX trust are covered in <a href="05-advanced-cryptography.html#sec-5-14">Topic 5 — Section 5.14</a>.</p>
+      </section>
+
+      <section id="sec-6-6">
+        <h2>6.6 Practical Implementations of Digital Signatures</h2>
+        <p>Modern enterprise systems implement digital signatures using three primary algorithmic styles:</p>
+
+        <h3>1. RSA Signatures</h3>
+        <p><strong>How it works:</strong> Relies on the standard prime factorization math of the RSA algorithm. The message digest is padded (using standards like PKCS#1 v1.5 or RSA-PSS) and then processed through the sender's private key. It is widely compatible across global networks but requires large 2048-bit or 4096-bit keys, which can slow down high-volume processing environments.</p>
+        <figure class="diagram figure-photo" aria-labelledby="fig-rsa-sign-caption">
+          <img src="../../assets/images/topic-05/rsa-encryption-works.png"
+               alt="RSA public key encrypts, private key decrypts — same key pair used for signatures with roles reversed"
+               width="640" height="auto" loading="lazy" decoding="async" />
+          <figcaption id="fig-rsa-sign-caption">RSA key pair — signing uses the private key; verification uses the public key.</figcaption>
+        </figure>
+        <p>Algorithm background: <a href="05-advanced-cryptography.html#asym-1">Topic 5 — RSA</a>.</p>
+
+        <h3>2. DSA (Digital Signature Algorithm)</h3>
+        <p><strong>How it works:</strong> A dedicated US Federal processing standard that relies on calculating modular exponentiation and discrete logarithms. DSA is designed exclusively for signing and cannot be adapted for standard data encryption.</p>
+        <p>See also: <a href="05-advanced-cryptography.html#asym-4">Topic 5 — DSA</a>.</p>
+
+        <h3>3. ECDSA (Elliptic Curve Digital Signature Algorithm)</h3>
+        <p><strong>How it works:</strong> Synthesizes the algebraic mechanics of DSA with the advanced efficiency of Elliptic Curve Cryptography (ECC).</p>
+        <p><strong>The Enterprise Value:</strong> ECDSA delivers exceptional security margins using tiny key lengths (e.g., a 256-bit ECDSA key matches the security of a 3072-bit RSA key). This results in faster processing speeds, minimal memory use, and significantly lower network bandwidth requirements, making it the preferred standard for HTTPS certificates, modern operating system updates, and mobile banking applications.</p>
+        <p>ECC background: <a href="05-advanced-cryptography.html#asym-2">Topic 5 — Elliptic Curve Cryptography</a>.</p>
+
+        <h3>4. Ed25519 (modern alternative)</h3>
+        <p>
+          <strong>Ed25519</strong> is a widely deployed Edwards-curve signature scheme built on Curve25519. It offers fast signing/verification, small keys and signatures, and resistance to several implementation pitfalls seen in older ECDSA deployments. It appears in SSH keys, modern TLS stacks, and cryptocurrency protocols alongside ECDSA.
+        </p>
+      </section>
+
+      <section id="sec-6-7">
+        <h2>6.7 Architectural Summary Matrix: Hashing, HMAC, and Digital Signatures</h2>
+        <div class="table-wrap">
+          <table>
+            <caption>Hash vs HMAC vs digital signature</caption>
+            <thead>
+              <tr>
+                <th>Security Attribute</th>
+                <th>Cryptographic Hash (SHA-256)</th>
+                <th>HMAC (Hash + Shared Secret Key)</th>
+                <th>Digital Signature (ECDSA/RSA)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Key Architecture</strong></td>
+                <td>No keys used. Operates entirely on open math.</td>
+                <td>Single Symmetric Shared Secret Key used by both parties.</td>
+                <td>An Asymmetric Key Pair (Private Key signs, Public Key verifies).</td>
+              </tr>
+              <tr>
+                <td><strong>Primary Core Function</strong></td>
+                <td>Basic data integrity checking (detects accidental corruption).</td>
+                <td>Data Origin Authentication and tamper-detection.</td>
+                <td>Non-Repudiation, identity verification, and data integrity.</td>
+              </tr>
+              <tr>
+                <td><strong>Non-Repudiation Capability</strong></td>
+                <td>No. Anyone can run the open hash on any file.</td>
+                <td>No. Because two parties share the key, either party could forge the token.</td>
+                <td>Yes. Only the owner possesses the private key that generated the signature.</td>
+              </tr>
+              <tr>
+                <td><strong>Standard Enterprise Uses</strong></td>
+                <td>Storing hashed passwords, verifying ISO downloads.</td>
+                <td>API request validation, secure webhook routing.</td>
+                <td>SSL/TLS browser handshakes, signing software updates.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout exam">
+          <div class="callout-title">Exam tip — pick the right tool</div>
+          <p><strong>Hash</strong> = integrity only. <strong>HMAC</strong> = integrity + shared-secret authenticity. <strong>Digital signature</strong> = integrity + identity + non-repudiation.</p>
+        </div>
+      </section>
+
+      <section id="sec-6-8">
+        <h2>6.8 Hands-on: OpenSSL Hash and HMAC</h2>
+        <h3>Hash and HMAC</h3>
+        <pre><code># SHA-256 digest of a string
+echo -n "geeksforgeeks" | openssl dgst -sha256
+
+# SHA-256 of a file (integrity check)
+openssl dgst -sha256 myfile.iso
+
+# HMAC-SHA256 with a shared secret (demo key only)
+echo -n "message body" | openssl dgst -sha256 -hmac "shared-secret-key"
+
+# List supported digests
+openssl dgst -list
+</code></pre>
+
+        <h3>Generate key pair and sign a file (RSA)</h3>
+        <pre><code># Create 2048-bit RSA private key
+openssl genrsa -out private.pem 2048
+
+# Extract public key
+openssl rsa -in private.pem -pubout -out public.pem
+
+# Sign SHA-256 digest of document (PKCS#1 v1.5)
+openssl dgst -sha256 -sign private.pem -out document.sig document.txt
+
+# Verify signature
+openssl dgst -sha256 -verify public.pem -signature document.sig document.txt
+</code></pre>
+
+        <h3>CyberChef (browser)</h3>
+        <p>
+          Open <a href="https://gchq.github.io/CyberChef/" rel="noopener noreferrer">CyberChef</a> and try:
+        </p>
+        <ol>
+          <li><strong>SHA-256</strong> on <code>geeksforgeeks</code> — compare with the digest in <a href="#sec-6-1">§6.1</a>.</li>
+          <li><strong>HMAC</strong> — enter a message and passphrase; observe how changing one character changes the tag.</li>
+          <li><strong>Generate RSA Key Pair</strong> (optional) — explore how signing keys differ from encryption use cases.</li>
+        </ol>
+        <p>For TLS certificates and signed software updates, see <a href="05-advanced-cryptography.html#sec-5-14">Topic 5 — HTTPS and E2EE</a>.</p>
+      </section>
+
+      <section id="sec-6-9">
+        <h2>6.9 Password Storage and Salted Hashes</h2>
+        <p>
+          Storing passwords with a plain hash (even SHA-256) is unsafe: identical passwords yield identical digests, and attackers use
+          <strong>rainbow tables</strong> or GPUs to crack millions of hashes per second. Production systems use
+          <strong>password hashing functions</strong> designed to be slow and memory-hard.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <caption>Password storage — do and do not</caption>
+            <thead>
+              <tr><th>Approach</th><th>Status</th><th>Notes</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Plaintext password</td><td>Never</td><td>Instant breach impact</td></tr>
+              <tr><td>MD5 / SHA-256 alone</td><td>Obsolete for passwords</td><td>Too fast; no per-user salt</td></tr>
+              <tr><td>bcrypt / scrypt / Argon2</td><td>Recommended</td><td>Salt + tunable work factor</td></tr>
+              <tr><td>HMAC with server pepper</td><td>Sometimes layered</td><td>Extra secret stored outside the DB</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          <strong>Salt:</strong> A unique random value per user, stored alongside the hash, so two users with the same password get different stored values.
+          <strong>Work factor:</strong> bcrypt/Argon2 parameters that slow brute-force on stolen databases.
+        </p>
+        <p>Hash algorithm walkthroughs with diagrams: <a href="05-advanced-cryptography.html#sec-5-11">Topic 5 §5.11</a>.</p>
+      </section>
+
+      <section id="sec-6-10">
+        <h2>6.10 Digital Signatures: Components, Assurances, and Applications</h2>
+        <div class="callout canonical">
+          <div class="callout-title">Related — step-by-step workflow</div>
+          <p>Alice/Bob sign-and-verify walkthrough with diagrams: <a href="#sec-6-5">§6.5 Digital Signatures: The Cryptographic Mechanics</a>.</p>
+        </div>
+        <p>
+          Digital signatures and digital certificates are two fundamental technologies used to ensure security, authenticity, and trust in online communication. They are widely used in areas such as online banking, secure emails, software distribution, e-commerce, and electronic document signing.
+        </p>
+        <p>
+          By providing authentication, integrity, confidentiality, and non-repudiation, these technologies help protect data from tampering, impersonation, fraud, and unauthorized access in digital environments.
+        </p>
+
+        <h3>Digital Signature</h3>
+        <p>
+          A digital signature is a cryptographic technique used to verify the authenticity, integrity, and non-repudiation of a digital message or document. It ensures that the message was created by a known sender and that it has not been altered during transmission.
+        </p>
+
+        <h3>Key Components of Digital Signature</h3>
+
+        <h4>1. Key Generation Algorithm</h4>
+        <p>Digital signatures use asymmetric cryptography, which involves a pair of keys:</p>
+        <ul>
+          <li><strong>Private Key:</strong> Kept secret by the owner and used to create the signature.</li>
+          <li><strong>Public Key:</strong> Shared with others and used to verify the signature.</li>
+        </ul>
+        <p>This key pair ensures secure authentication during digital transactions.</p>
+
+        <h4>2. Signing Algorithm</h4>
+        <p>To create a digital signature:</p>
+        <ul>
+          <li>A hash function is applied to the original message to generate a fixed-length value called a <strong>message digest</strong>.</li>
+          <li>This message digest is then encrypted using the sender's private key.</li>
+          <li>The encrypted hash value forms the digital signature.</li>
+        </ul>
+        <p>Instead of encrypting the entire message, only the hash is encrypted because:</p>
+        <ul>
+          <li>Hash values are much shorter</li>
+          <li>Hashing is faster than encryption</li>
+          <li>It improves efficiency without reducing security</li>
+        </ul>
+
+        <h4>3. Signature Verification Algorithm</h4>
+        <p>At the receiver's side:</p>
+        <ul>
+          <li>The digital signature is decrypted using the sender's public key, producing the original message digest.</li>
+          <li>The receiver independently computes the hash of the received message using the same hash function.</li>
+          <li>Both hash values are compared:
+            <ul>
+              <li>If they match → signature is valid</li>
+              <li>If they differ → message integrity is compromised</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>How Digital Signature Works</h3>
+        <p>The process of creating and verifying a digital signature involves the following steps:</p>
+        <ol>
+          <li>The sender computes a message digest using a one-way hash function.</li>
+          <li>The message digest is encrypted using the sender's private key, forming the digital signature.</li>
+        </ol>
+        <div class="formula">Digital Signature = Encryption (Sender's Private Key, Message Digest)</div>
+        <ol start="3">
+          <li>The sender transmits:
+            <ul>
+              <li>Original message</li>
+              <li>Digital signature</li>
+            </ul>
+          </li>
+          <li>The receiver decrypts the digital signature using the sender's public key.</li>
+          <li>The receiver computes a fresh message digest from the received message.</li>
+          <li>If both message digests are identical, integrity and authenticity are verified.</li>
+        </ol>
+        <p>A one-way hash function ensures that:</p>
+        <ul>
+          <li>Hash computation is easy</li>
+          <li>Retrieving the original message from the hash is computationally infeasible</li>
+        </ul>
+
+        <h3>Working of Digital Signature</h3>
+        <pre class="diagram-ascii" aria-label="Digital signature flow">Sender → Hash → Encrypt with Private Key → Digital Signature
+Receiver → Decrypt with Public Key → Compare Hashes → Verify</pre>
+
+        <h3>Digital Signature vs Electronic Signature</h3>
+        <p>
+          A digital signature is a specific type of electronic signature that uses cryptographic algorithms and key pairs to provide strong security guarantees.
+        </p>
+        <p>
+          An electronic signature is a broader term that includes any electronic indication of agreement, such as:
+        </p>
+        <ul>
+          <li>Typing a name</li>
+          <li>Clicking an &quot;I Agree&quot; button</li>
+          <li>Uploading a scanned handwritten signature</li>
+        </ul>
+        <p>
+          Electronic signatures may not always provide cryptographic security and are often used for non-sensitive agreements, whereas digital signatures are used for high-security and legally sensitive documents.
+        </p>
+
+        <h3>Assurances Provided by Digital Signatures</h3>
+        <p>Digital signatures provide the following assurances:</p>
+        <ul>
+          <li><strong>Authenticity:</strong> Confirms the identity of the signer.</li>
+          <li><strong>Integrity:</strong> Ensures the content has not been altered.</li>
+          <li><strong>Non-repudiation:</strong> Prevents the signer from denying having signed the document.</li>
+          <li><strong>Notarization:</strong> In certain cases, time-stamped digital signatures can serve as legally recognized notarization.</li>
+        </ul>
+
+        <h3>Benefits of Digital Signatures</h3>
+        <ul>
+          <li><strong>Legal Documents and Contracts:</strong> Digital signatures are legally binding and tamper-proof.</li>
+          <li><strong>Sales Agreements:</strong> Ensures trust between buyer and seller.</li>
+          <li><strong>Financial Documents:</strong> Prevents fraud in invoices and payment requests.</li>
+          <li><strong>Healthcare Data:</strong> Protects patient records and research data from unauthorized modification.</li>
+        </ul>
+
+        <h3>Drawbacks of Digital Signatures</h3>
+        <ul>
+          <li><strong>Technology Dependency:</strong> Vulnerable if systems are poorly secured or outdated.</li>
+          <li><strong>Complexity:</strong> Setup and usage may be difficult for non-technical users.</li>
+          <li><strong>Limited Adoption:</strong> In developing regions, lack of infrastructure may slow adoption.</li>
+        </ul>
+      </section>
+
+      <section id="sec-6-11">
+        <h2>6.11 Digital Certificates</h2>
+        <p>
+          A digital certificate is an electronic document issued by a trusted third party known as a <strong>Certificate Authority (CA)</strong>. It verifies the identity of an individual, organization, or website and binds that identity to a public key.
+        </p>
+        <p>
+          Digital certificates enable secure communication by establishing trust between communicating parties.
+        </p>
+
+        <h3>Contents of a Digital Certificate</h3>
+        <p>A digital certificate typically includes:</p>
+        <ul>
+          <li>Name of the certificate holder</li>
+          <li>Unique serial number</li>
+          <li>Validity period (issue and expiration dates)</li>
+          <li>Public key of the certificate holder</li>
+          <li>Digital signature of the Certificate Authority</li>
+        </ul>
+        <p>The certificate is often transmitted along with digital signatures and encrypted messages.</p>
+
+        <h3>Advantages of Digital Certificates</h3>
+        <ul>
+          <li><strong>Network Security:</strong> Protects against man-in-the-middle and impersonation attacks.</li>
+          <li><strong>Authentication:</strong> Enables strong identity verification across networks.</li>
+          <li><strong>User Trust:</strong> Browser-trusted certificates assure users that websites are legitimate.</li>
+        </ul>
+
+        <h3>Disadvantages of Digital Certificates</h3>
+        <ul>
+          <li><strong>Phishing Attacks:</strong> Attackers may obtain certificates for fake websites.</li>
+          <li><strong>Weak Encryption:</strong> Older certificates may use outdated algorithms.</li>
+          <li><strong>Misconfiguration:</strong> Improper setup can expose systems to attacks.</li>
+        </ul>
+
+        <h3>Digital Certificate vs Digital Signature</h3>
+        <p>Digital certificates and digital signatures serve different purposes but are closely related.</p>
+        <div class="table-wrap">
+          <table>
+            <caption>Digital certificate vs digital signature</caption>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Digital Signature</th>
+                <th>Digital Certificate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Definition</strong></td>
+                <td>Ensures integrity and authenticity of a document</td>
+                <td>Verifies identity of an entity</td>
+              </tr>
+              <tr>
+                <td><strong>Purpose</strong></td>
+                <td>Message verification</td>
+                <td>Identity verification</td>
+              </tr>
+              <tr>
+                <td><strong>Generated By</strong></td>
+                <td>Sender using private key</td>
+                <td>Certificate Authority</td>
+              </tr>
+              <tr>
+                <td><strong>Standard</strong></td>
+                <td>Digital Signature Standard (DSS)</td>
+                <td>X.509</td>
+              </tr>
+              <tr>
+                <td><strong>Security Services</strong></td>
+                <td>Integrity, authenticity, non-repudiation</td>
+                <td>Authentication and trust</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>TLS/HTTPS certificate chains and PKIX trust: <a href="05-advanced-cryptography.html#sec-5-14">Topic 5 — Section 5.14</a>.</p>
+      </section>
+
+      <section id="sec-6-12">
+        <h2>6.12 Difference Between Hashing, Encryption, and Encoding</h2>
+        <p>
+          Encryption, hashing, and encoding are three different methods of transforming data, each serving a unique purpose. While encryption protects confidentiality, hashing ensures integrity, and encoding focuses on safe data representation.
+        </p>
+        <ul>
+          <li><strong>Encryption:</strong> reversible, protects data secrecy</li>
+          <li><strong>Hashing:</strong> one-way, ensures integrity and verification</li>
+          <li><strong>Encoding:</strong> reversible, ensures data compatibility and formatting</li>
+        </ul>
+
+        <h3>What is Encryption?</h3>
+        <p>
+          Encryption is the process of converting readable plaintext into unreadable ciphertext, which can be reversed only with the correct key. It is used to protect sensitive data during storage or transmission.
+        </p>
+        <ul>
+          <li>Reversible with a key</li>
+          <li>Protects confidentiality</li>
+          <li>Used in secure communication and data protection</li>
+          <li>Algorithms include AES, RSA, and Blowfish</li>
+        </ul>
+        <figure class="diagram figure-photo" aria-labelledby="fig-enc-flow-caption">
+          <img src="../../assets/images/topic-06/encryption-encoding-flow.png"
+               alt="Encoding and decoding: plaintext and ciphertext transformed by an algorithm"
+               width="640" height="auto" loading="lazy" decoding="async" />
+          <figcaption id="fig-enc-flow-caption">Reversible transformation — plaintext and ciphertext via an algorithm (encryption/decryption).</figcaption>
+        </figure>
+        <p>Full encryption process and diagrams: <a href="05-advanced-cryptography.html#sec-5-4">Topic 5 — Section 5.4</a>.</p>
+
+        <h3>What is Hashing?</h3>
+        <p>
+          Hashing converts data into a fixed-length, irreversible value called a hash. It is used for integrity checks, password storage, and fast lookup.
+        </p>
+        <ul>
+          <li>One-way transformation</li>
+          <li>Ensures integrity (detects changes)</li>
+          <li>Fixed-length output regardless of input size</li>
+          <li>Algorithms include SHA-256, MD5</li>
+        </ul>
+        <figure class="diagram figure-photo" aria-labelledby="fig-hash-flow-caption">
+          <img src="../../assets/images/topic-06/hashing-flow-gfg.png"
+               alt="Hashing: plain text through hash function to hash key"
+               width="640" height="auto" loading="lazy" decoding="async" />
+          <figcaption id="fig-hash-flow-caption">Hashing — plain text through a hash function produces a fixed-length hash value (digest).</figcaption>
+        </figure>
+        <p>Operational depth: <a href="#sec-6-1">§6.1 Cryptographic Hash Functions</a>.</p>
+
+        <h3>What Is Encoding?</h3>
+        <p>
+          Encoding transforms data into a different format for safe transmission or storage. It is not a security mechanism and is fully reversible without a key.
+        </p>
+        <ul>
+          <li>Reversible without a key</li>
+          <li>Ensures data compatibility and formatting</li>
+          <li>Used for data transport, not security</li>
+          <li>Examples include Base64, URL encoding, ASCII</li>
+        </ul>
+
+        <h3>Difference Between Hashing, Encryption and Encoding</h3>
+        <p>Below are some key differences:</p>
+        <div class="table-wrap">
+          <table>
+            <caption>Hashing vs encryption vs encoding</caption>
+            <thead>
+              <tr>
+                <th>Aspect</th>
+                <th>Hashing</th>
+                <th>Encryption</th>
+                <th>Encoding</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Process</strong></td>
+                <td>One-way conversion of data into a fixed-length value.</td>
+                <td>Converts plaintext into ciphertext using a key (reversible).</td>
+                <td>Converts data to another format for compatibility (reversible).</td>
+              </tr>
+              <tr>
+                <td><strong>Purpose</strong></td>
+                <td>Used for integrity verification and password storage.</td>
+                <td>Used for confidentiality and secure communication.</td>
+                <td>Used for data formatting, transmission, and storage.</td>
+              </tr>
+              <tr>
+                <td><strong>Reversibility</strong></td>
+                <td>Cannot be reversed only compared.</td>
+                <td>Can be reversed using the correct key.</td>
+                <td>Can be reversed without any key.</td>
+              </tr>
+              <tr>
+                <td><strong>Output size</strong></td>
+                <td>Produces fixed-size output.</td>
+                <td>Output is same size or larger than input.</td>
+                <td>Output often becomes larger than input.</td>
+              </tr>
+              <tr>
+                <td><strong>Key</strong></td>
+                <td>No secret key required.</td>
+                <td>Requires encryption &amp; decryption keys.</td>
+                <td>No key required.</td>
+              </tr>
+              <tr>
+                <td><strong>Examples</strong></td>
+                <td>MD5, SHA-256.</td>
+                <td>AES, RSA.</td>
+                <td>Base64, URL.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="callout exam" id="key-takeaways">
+        <div class="callout-title">Key takeaways — Topic 6</div>
+        <ul>
+          <li>Hash = one-way fingerprint; MD5/SHA-1 broken; SHA-256/SHA-3 are current standards.</li>
+          <li>Pre-image, second pre-image, and collision resistance — collisions cost ~2<sup>n/2</sup>.</li>
+          <li>HMAC = hash + shared secret; blocks length-extension; used for APIs and webhooks.</li>
+          <li>Digital signature = hash + private-key operation; gives non-repudiation (RSA, DSA, ECDSA, Ed25519).</li>
+          <li>Pick tool by need: integrity only → hash; shared secret auth → HMAC; public identity → signature.</li>
+          <li>Passwords need salted bcrypt/Argon2 — not raw SHA-256.</li>
+          <li>Digital signature ≠ electronic signature — only DS gives cryptographic non-repudiation.</li>
+          <li>Digital certificate (X.509, CA) binds identity to a public key; signature verifies a specific message.</li>
+          <li>Encoding (Base64, URL) is not encryption — no key, not for secrecy.</li>
+        </ul>
+      </div>
+
+      <footer class="page-footer">
+        <a href="05-advanced-cryptography.html">← Topic 5</a>
+        <a href="../index.html">Book index</a>
+        <a href="../../index.html">All books</a>
+        <span>Topic 7 — coming soon</span>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

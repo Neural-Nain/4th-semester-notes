@@ -24,20 +24,35 @@
       <p class="toc-title">On this page</p>
       <nav aria-label="Table of contents">
 <ul>
+  <li><a href="#reading-path">Reading order</a></li>
   <li><a href="#sec-5-1">5.1 Cryptology</a></li>
-  <li><a href="#sec-5-2">5.2 Goals</a></li>
+  <li><a href="#sec-5-22">5.22 Encryption vs cryptography</a></li>
   <li><a href="#sec-5-3">5.3 Lexicon</a></li>
+  <li><a href="#sec-5-18">5.18 Cryptography overview</a></li>
+  <li><a href="#sec-5-2">5.2 Goals</a></li>
+  <li><a href="#sec-5-21">5.21 Classical ciphers</a></li>
   <li><a href="#sec-5-4">5.4 Encryption &amp; decryption</a></li>
   <li><a href="#sec-5-5">5.5 Kerckhoffs</a></li>
   <li><a href="#sec-5-6">5.6 Stream vs block</a></li>
   <li><a href="#sec-5-7">5.7 Symmetric vs asymmetric</a></li>
-  <li><a href="#sec-5-8">5.8 Link vs E2EE</a></li>
-  <li><a href="#sec-5-9">5.9 Key space</a></li>
-  <li><a href="#sec-5-10">5.10 Steganography</a></li>
-  <li><a href="#sec-5-11">5.11 Hashing</a></li>
+  <li><a href="#sec-5-19">5.19 Types of cryptography</a>
+    <ul>
+      <li><a href="#sec-5-19-1">Symmetric</a></li>
+      <li><a href="#sec-5-19-2">Hash functions</a></li>
+      <li><a href="#sec-5-19-3">Asymmetric</a></li>
+    </ul>
+  </li>
   <li><a href="#sec-5-12">5.12 Symmetric algorithms</a></li>
   <li><a href="#sec-5-13">5.13 Asymmetric algorithms</a></li>
+  <li><a href="#sec-5-11">5.11 Hashing</a></li>
+  <li><a href="#sec-5-9">5.9 Key space</a></li>
+  <li><a href="#sec-5-10">5.10 Steganography</a></li>
+  <li><a href="#sec-5-8">5.8 Link vs E2EE</a></li>
   <li><a href="#sec-5-14">5.14 HTTPS &amp; E2EE</a></li>
+  <li><a href="#sec-5-15">5.15 Features &amp; importance</a></li>
+  <li><a href="#sec-5-16">5.16 Benefits, uses &amp; trade-offs</a></li>
+  <li><a href="#sec-5-20">5.20 Applications</a></li>
+  <li><a href="#sec-5-17">5.17 Future of encryption</a></li>
 </ul>
 </nav>
     </aside>
@@ -48,8 +63,8 @@
           <a href="../../index.html">← All books</a>
           · <a href="../index.html">Book index</a>
           · <a href="04-security-kernel.html">Topic 4</a>
-          · <span class="topic-tag sym" title="Symmetric algorithms covered in §5.11">Sym</span>
-          <span class="topic-tag asym" title="Asymmetric algorithms covered in §5.12">Asym</span>
+          · <span class="topic-tag sym" title="Symmetric algorithms covered in §5.12">Sym</span>
+          <span class="topic-tag asym" title="Asymmetric algorithms covered in §5.13">Asym</span>
         </p>
         <div class="header-actions">
           <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="sidebar-nav" aria-label="Open page navigation">
@@ -66,6 +81,21 @@
         </div>
       </header>
       <p class="callout-intro">5. Advanced Cryptography, Ciphers, and Network Implementation</p>
+
+      <div class="reading-path" id="reading-path">
+        <div class="reading-path-title">Recommended reading order (22 sections)</div>
+        <ol>
+          <li><a href="#sec-5-1">5.1</a> Cryptology · <a href="#sec-5-22">5.22</a> Encryption vs cryptography · <a href="#sec-5-3">5.3</a> Lexicon</li>
+          <li><a href="#sec-5-18">5.18</a> Overview · <a href="#sec-5-2">5.2</a> Goals · <a href="#sec-5-21">5.21</a> Classical ciphers</li>
+          <li><a href="#sec-5-4">5.4</a> Encryption process · <a href="#sec-5-5">5.5</a> Kerckhoffs · <a href="#sec-5-6">5.6</a> Stream vs block</li>
+          <li><a href="#sec-5-7">5.7</a> Sym vs asym · <a href="#sec-5-19">5.19</a> Three types</li>
+          <li><a href="#sec-5-12">5.12</a> Symmetric algos · <a href="#sec-5-13">5.13</a> Asymmetric algos · <a href="#sec-5-11">5.11</a> Hashing</li>
+          <li><a href="#sec-5-9">5.9</a> Key space · <a href="#sec-5-10">5.10</a> Steganography · <a href="#sec-5-8">5.8</a> Link vs E2EE</li>
+          <li><a href="#sec-5-14">5.14</a> HTTPS/E2EE · <a href="#sec-5-15">5.15</a>–<a href="#sec-5-16">5.16</a> Features &amp; trade-offs</li>
+          <li><a href="#sec-5-20">5.20</a> Applications · <a href="#sec-5-17">5.17</a> Future · <a href="06-hashing-and-digital-signatures.html">Topic 6</a> (HMAC &amp; signatures)</li>
+        </ol>
+      </div>
+
 <section id="sec-5-1">
 <h2>5.1 Introduction to Cryptology (The Historical and Mathematical Context)</h2>
 <p>Cryptology is the overarching mathematical and scientific study of secret communications. The term originates from the Greek words <em>kryptos</em> (hidden) and <em>logos</em> (word/study). It is an ancient practice that has evolved from basic linguistic transformations into highly sophisticated mathematical frameworks that secure the global digital economy.</p>
@@ -104,15 +134,28 @@
 </figure>
 
 </section>
-<section id="sec-5-2">
-<h2>5.2 Core Mathematical and Technical Goals of Cryptography</h2>
-<p>While casual users equate cryptography simply with hiding secrets, a professional information security system relies on cryptography to enforce four distinct, non-negotiable security requirements:</p>
-<ul>
-  <li><strong>Confidentiality:</strong> Ensuring that unauthorized parties cannot read data at rest or in transit. This is accomplished by turning readable text into unreadable gibberish using an encryption algorithm.</li>
-  <li><strong>Integrity:</strong> Ensuring that a message has not been altered, injected, or deleted during transit or storage. Cryptography uses mathematical functions like hashes (e.g., SHA-256) or Message Authentication Codes (MACs) to create a unique digital fingerprint for data. If even one bit of data changes, the fingerprint changes completely, alerting the system to tampering.</li>
-  <li><strong>Authentication:</strong> Verifying the identity of the sender or the system creating the data. Through digital signatures and certificates, cryptography mathematically proves that a message originated from a specific entity, preventing impersonation attacks.</li>
-  <li><strong>Non-Repudiation:</strong> Preventing an entity from denying previous commitments or actions. By signing a transactional payload with an unshared, highly secured private key, the sender creates undeniable mathematical proof of their action. They cannot later claim, &quot;I never sent that transfer request.&quot;</li>
-</ul>
+<section id="sec-5-22">
+<h2>5.22 Encryption vs Cryptography</h2>
+<div class="table-wrap">
+  <table>
+    <caption>Encryption vs cryptography</caption>
+    <thead>
+      <tr><th>Aspect</th><th>Encryption</th><th>Cryptography</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Definition</strong></td><td>A <em>process</em> of converting plaintext to ciphertext</td><td>The <em>study and practice</em> of securing information</td></tr>
+      <tr><td><strong>Scope</strong></td><td>One technique among many</td><td>Includes encryption, hashing, signatures, protocols, key management</td></tr>
+      <tr><td><strong>Purpose</strong></td><td>Hide message content</td><td>Protect confidentiality, integrity, authentication, non-repudiation</td></tr>
+      <tr><td><strong>Types</strong></td><td>Symmetric or asymmetric encryption</td><td>Symmetric, asymmetric, hashes, MACs, PKI, steganography</td></tr>
+      <tr><td><strong>Techniques</strong></td><td>AES, RSA, etc.</td><td>Algorithms + key exchange + standards + cryptanalysis</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>
+  <strong>Encryption</strong> is what you do to a message; <strong>cryptography</strong> is the broader discipline
+  that designs and analyzes how to do it safely — including when <em>not</em> to rely on encryption alone (e.g., use
+  hashing for integrity, certificates for authentication). See <a href="#sec-5-4">Section 5.4</a> for the encryption/decryption process and <a href="#sec-5-1">Section 5.1</a> for cryptology terminology.
+</p>
 </section>
 <section id="sec-5-3">
 <h2>5.3 Technical Lexicon: Foundations of Secret Writing</h2>
@@ -137,10 +180,130 @@
 <h3>6. Key (or Cryptovariable)</h3>
 <p>A cryptographic key is a critical string of bits or characters that drives the behavior of a cryptographic algorithm. While the cipher algorithm itself is typically public knowledge, the key must be kept secret. The key customizes the algorithm's mathematical operations so that an attacker cannot decrypt the ciphertext unless they possess that exact key.</p>
 </section>
+<section id="sec-5-18">
+<h2>5.18 Cryptography: Overview and Working</h2>
+<div class="callout canonical">
+  <div class="callout-title">Article-aligned overview</div>
+  <p>Summary view — full technical detail in <a href="#sec-5-1">§5.1 Cryptology</a> and <a href="#sec-5-2">§5.2 Goals</a>.</p>
+</div>
+<p>
+  <strong>Cryptography</strong> is the science of protecting information by transforming readable data
+  (<strong>plaintext</strong>) into unreadable form (<strong>ciphertext</strong>). It underpins secure communication,
+  digital signatures, password storage, and financial transactions.
+</p>
 
+<figure class="diagram figure-photo" aria-labelledby="fig-crypto-intro-caption">
+  <img src="../../assets/images/topic-05/cryptography-intro.png"
+       alt="Cryptography: plaintext transformed to ciphertext using a key"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-crypto-intro-caption">Cryptography protects data by converting plaintext into ciphertext.</figcaption>
+</figure>
+
+<h3>Features of cryptography</h3>
+<p>Beyond the goals in <a href="#sec-5-2">Section 5.2</a>, practical cryptography also emphasizes:</p>
+<ul>
+  <li><strong>Confidentiality:</strong> Only authorized parties can read the data.</li>
+  <li><strong>Integrity:</strong> Detect unauthorized changes (often via hashing).</li>
+  <li><strong>Authentication:</strong> Verify identity of sender or system.</li>
+  <li><strong>Non-repudiation:</strong> Sender cannot deny having sent a signed message.</li>
+  <li><strong>Adaptability:</strong> Cryptographic methods evolve to counter new threats (e.g., moving from DES to AES, preparing for quantum attacks).</li>
+  <li><strong>Interoperability:</strong> Standards (TLS, AES, SHA-256) enable secure communication across different systems and platforms.</li>
+</ul>
+
+<h3>Working of cryptography</h3>
+<p>
+  A simple substitution-style illustration: plaintext <code>Hello</code> might become ciphertext
+  <code>jknnq</code> after encryption with a key and algorithm. The recipient reverses the process with the correct key.
+</p>
+<figure class="diagram figure-photo" aria-labelledby="fig-crypto-working-caption">
+  <img src="../../assets/images/topic-05/cryptography-working.png"
+       alt="Example: Hello encrypted to jknnq"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-crypto-working-caption">Example — plaintext &quot;Hello&quot; encrypted to ciphertext &quot;jknnq&quot;.</figcaption>
+</figure>
+
+<p>Typical workflow:</p>
+<ol>
+  <li>Choose an encryption algorithm (e.g., AES, RSA).</li>
+  <li>Generate or agree on a cryptographic key.</li>
+  <li>Encrypt plaintext into ciphertext.</li>
+  <li>Transmit ciphertext over a channel.</li>
+  <li>Recipient decrypts using the correct key.</li>
+  <li>Optionally verify integrity using a hash (e.g., SHA-256).</li>
+</ol>
+<figure class="diagram figure-photo" aria-labelledby="fig-crypto-flow-caption">
+  <img src="../../assets/images/topic-05/cryptography-plaintext-flow.png"
+       alt="Six-step cryptography workflow from algorithm choice to integrity check"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-crypto-flow-caption">End-to-end cryptography workflow — encrypt, transmit, decrypt, verify integrity.</figcaption>
+</figure>
+</section>
+<section id="sec-5-2">
+<h2>5.2 Core Mathematical and Technical Goals of Cryptography</h2>
+<p>While casual users equate cryptography simply with hiding secrets, a professional information security system relies on cryptography to enforce five distinct security requirements that encryption helps deliver:</p>
+<ul>
+  <li><strong>Confidentiality:</strong> Ensuring that unauthorized parties cannot read data at rest or in transit. This is accomplished by turning readable text into unreadable gibberish using an encryption algorithm.</li>
+  <li><strong>Integrity:</strong> Ensuring that a message has not been altered, injected, or deleted during transit or storage. Cryptography uses mathematical functions like hashes (e.g., SHA-256) or Message Authentication Codes (MACs) to create a unique digital fingerprint for data. If even one bit of data changes, the fingerprint changes completely, alerting the system to tampering.</li>
+  <li><strong>Authentication:</strong> Verifying the identity of the sender or the system creating the data. Through digital signatures and certificates, cryptography mathematically proves that a message originated from a specific entity, preventing impersonation attacks.</li>
+  <li><strong>Non-Repudiation:</strong> Preventing an entity from denying previous commitments or actions. By signing a transactional payload with an unshared, highly secured private key, the sender creates undeniable mathematical proof of their action. They cannot later claim, &quot;I never sent that transfer request.&quot;</li>
+  <li><strong>Access control:</strong> Restricting data access to authorized users who hold the correct decryption key or credentials—only they can recover plaintext from ciphertext.</li>
+</ul>
+</section>
+<section id="sec-5-21">
+<h2>5.21 Classical Ciphers</h2>
+<p>
+  A <strong>cipher</strong> is an algorithm for performing encryption or decryption. Classical ciphers predate modern
+  computers and illustrate core ideas still used in education, CTFs, and legacy malware.
+</p>
+<ul>
+  <li><strong>Substitution:</strong> Replace letters/symbols (e.g., Caesar, Vigenère, Atbash, ROT13).</li>
+  <li><strong>Transposition:</strong> Rearrange positions (e.g., Rail Fence).</li>
+</ul>
+
+<div class="table-wrap">
+  <table>
+    <caption>Common classical ciphers</caption>
+    <thead>
+      <tr><th>Cipher</th><th>Description</th><th>Real-life / study use</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Caesar</strong></td><td>Shift each letter by a fixed number</td><td>Intro crypto, CTF, simple malware obfuscation</td></tr>
+      <tr><td><strong>Vigenère</strong></td><td>Polyalphabetic substitution with a keyword</td><td>Historical military; harder than Caesar</td></tr>
+      <tr><td><strong>Atbash</strong></td><td>Reverse alphabet (A↔Z)</td><td>Biblical/text puzzles</td></tr>
+      <tr><td><strong>ROT13</strong></td><td>Caesar with shift 13 (self-inverse)</td><td>Usenet spoilers, trivial encoding</td></tr>
+      <tr><td><strong>Rail Fence</strong></td><td>Write text in zigzag rows, read off rows</td><td>Transposition practice, basic stego puzzles</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<figure class="diagram figure-photo" aria-labelledby="fig-caesar-caption">
+  <img src="../../assets/images/topic-05/caesar-cipher.png"
+       alt="Caesar cipher: shifting letters in the alphabet"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-caesar-caption">Caesar cipher — each letter shifted by a fixed amount in the alphabet.</figcaption>
+</figure>
+
+<h3>Hands-on: CyberChef</h3>
+<p>
+  Use <a href="https://gchq.github.io/CyberChef/" rel="noopener noreferrer">CyberChef</a> to practice:
+</p>
+<ol>
+  <li>Open CyberChef and search for <strong>ROT13</strong> or <strong>Caesar Cipher</strong>.</li>
+  <li>Input: <code>Hello Friends</code> — apply a shift (e.g., ROT13 or Caesar +3) and observe ciphertext.</li>
+  <li>Try <strong>Rail Fence Encode</strong> with box height 3 on a short phrase to see transposition.</li>
+</ol>
+<p>Classical ciphers are not secure for real data; they build intuition before studying AES and RSA.</p>
+</section>
 <section id="sec-5-4">
 <h2>5.4 Encryption and Decryption — Core Process</h2>
 <p>Encryption and decryption are the two fundamental operations every cipher performs. Together they protect confidentiality: encryption hides data; decryption restores it for authorized parties only.</p>
+
+<figure class="diagram figure-photo" aria-labelledby="fig-enc-components-caption">
+  <img src="../../assets/images/topic-05/encryption-components.png"
+       alt="Encryption components: plaintext, encryption algorithm and key produce ciphertext"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-enc-components-caption">Components of encryption: plaintext, algorithm, key, and ciphertext.</figcaption>
+</figure>
 
 <figure class="diagram diagram-lg" aria-labelledby="fig-encdec-caption">
   <svg viewBox="0 0 680 240" width="680" height="240" role="img" aria-label="Encryption and decryption flow">
@@ -178,6 +341,13 @@
 <div class="formula">C = E_K(P)</div>
 <p>Where <em>E</em> is the encryption function, <em>K</em> is the key, and <em>P</em> is plaintext.</p>
 
+<figure class="diagram figure-photo" aria-labelledby="fig-enc-simple-caption">
+  <img src="../../assets/images/topic-05/encryption-simple.png"
+       alt="Plaintext encrypted to ciphertext; only the correct key reverses the process"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-enc-simple-caption">Encryption transforms readable plaintext into unreadable ciphertext.</figcaption>
+</figure>
+
 <h3>Decryption (decipherment)</h3>
 <p>Decryption is the exact inverse: ciphertext is processed with the correct key through the decryption function to recover the original plaintext.</p>
 <div class="formula">P = D_K(C)</div>
@@ -203,6 +373,13 @@
 </div>
 <p><strong>Digital signatures</strong> reverse the asymmetric roles: the sender signs with their <em>private</em> key; anyone verifies with the sender's <em>public</em> key (integrity and authentication, not secrecy).</p>
 
+<figure class="diagram figure-photo" aria-labelledby="fig-enc-sender-caption">
+  <img src="../../assets/images/topic-05/encryption-sender-recipient.png"
+       alt="Sender encrypts with a shared key; recipient decrypts with the same key to recover the message"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-enc-sender-caption">How data encryption works — symmetric key used for both encryption and decryption.</figcaption>
+</figure>
+
 <h3>Where encryption and decryption happen</h3>
 <ul>
   <li><strong>Data at rest:</strong> Files on disk, database fields, or backups are encrypted before storage and decrypted only when an authorized application needs access (e.g., full-disk encryption, encrypted columns).</li>
@@ -218,7 +395,6 @@
   <li><strong>Encrypting but not authenticating:</strong> Encryption alone does not prove who sent data or detect tampering—use MACs or AEAD modes (e.g., AES-GCM).</li>
 </ul>
 </section>
-
 <section id="sec-5-5">
 <h2>5.5 Kerckhoffs's Principle: The Gold Standard of Security Architecture</h2>
 <p>Auguste Kerckhoffs formulated a design principle that serves as the foundation of modern security engineering:</p>
@@ -287,6 +463,20 @@
 <section id="sec-5-7">
 <h2>5.7 Symmetric vs. Asymmetric Cryptographic Paradigms</h2>
 
+<figure class="diagram figure-photo" aria-labelledby="fig-sym-enc-caption">
+  <img src="../../assets/images/topic-05/symmetric-encryption.png"
+       alt="Symmetric encryption: the same key encrypts original text to ciphertext and decrypts back"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-sym-enc-caption">Symmetric encryption — one shared secret key for both directions.</figcaption>
+</figure>
+
+<figure class="diagram figure-photo" aria-labelledby="fig-asym-enc-caption">
+  <img src="../../assets/images/topic-05/asymmetric-encryption.png"
+       alt="Asymmetric encryption: public key encrypts; private key decrypts"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-asym-enc-caption">Asymmetric encryption — mathematically linked public and private keys.</figcaption>
+</figure>
+
 <div class="table-wrap">
   <table>
     <caption>Symmetric vs asymmetric cryptographic paradigms (Section 5.7)</caption>
@@ -303,6 +493,310 @@
   </table>
 </div>
 <p>Cryptographic systems are fundamentally categorized by how they manage and utilize their keys.</p>
+</section>
+<section id="sec-5-19">
+<h2>5.19 Types of Cryptography</h2>
+<div class="callout canonical">
+  <div class="callout-title">Types summary</div>
+  <p>Condensed map — algorithm catalogs: <a href="#sec-5-12">§5.12 Symmetric</a>, <a href="#sec-5-13">§5.13 Asymmetric</a>, <a href="#sec-5-11">§5.11 Hashing</a>. Paradigms: <a href="#sec-5-7">§5.7</a>.</p>
+</div>
+<p>
+  Modern cryptography is often grouped into three families: <strong>symmetric</strong> (shared secret key),
+  <strong>hash functions</strong> (one-way digests, no key), and <strong>asymmetric</strong> (public/private key pair).
+  See also <a href="#sec-5-12">Section 5.12</a>, <a href="#sec-5-11">Section 5.11</a>, and
+  <a href="#sec-5-13">Section 5.13</a> for algorithm depth.
+</p>
+<figure class="diagram figure-photo" aria-labelledby="fig-types-crypto-caption">
+  <img src="../../assets/images/topic-05/types-of-cryptography.png"
+       alt="Three types of cryptography: symmetric, hash, and asymmetric"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-types-crypto-caption">Three main types — symmetric, hash functions, and asymmetric cryptography.</figcaption>
+</figure>
+
+<h3 id="sec-5-19-1">5.19.1 Symmetric-key cryptography</h3>
+<p>
+  The same secret key encrypts and decrypts data. It is fast and suitable for bulk encryption, but
+  <strong>key distribution</strong> is hard: both parties must possess the same key without an attacker learning it.
+</p>
+<figure class="diagram figure-photo" aria-labelledby="fig-sym-flow-gfg-caption">
+  <img src="../../assets/images/topic-05/symmetric-key-flow-gfg.png"
+       alt="Symmetric encryption: one shared key for encryption and decryption"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-sym-flow-gfg-caption">Symmetric cryptography — one shared key for both encryption and decryption.</figcaption>
+</figure>
+<ul>
+  <li><strong>DES:</strong> 64-bit blocks, effective <strong>56-bit</strong> key — obsolete; brute-forceable in hours on modern hardware. See <a href="#sym-2">DES in Section 5.12</a>.</li>
+  <li><strong>AES:</strong> Industry standard — 128-bit blocks; keys of <strong>128, 192, or 256</strong> bits. See <a href="#sym-1">AES in Section 5.12</a>.</li>
+</ul>
+<figure class="diagram figure-photo" aria-labelledby="fig-des-diagram-caption">
+  <img src="../../assets/images/topic-05/des-standard-diagram.png"
+       alt="DES standard block diagram"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-des-diagram-caption">DES — Feistel structure with 56-bit effective key (obsolete for new systems).</figcaption>
+</figure>
+<figure class="diagram figure-photo" aria-labelledby="fig-aes-vs-des-caption">
+  <img src="../../assets/images/topic-05/aes-vs-des.png"
+       alt="Comparison of AES and DES key sizes and security"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-aes-vs-des-caption">AES vs DES — larger keys and modern design make AES the current standard.</figcaption>
+</figure>
+
+<h3 id="sec-5-19-2">5.19.2 Hash functions</h3>
+<p>
+  Hash functions map input of any size to a fixed-length digest. There is <strong>no key</strong>; the operation is
+  one-way. Used for integrity, fingerprints, and (with salt) password storage. Detailed walkthroughs:
+  <a href="#sec-5-11">Section 5.11</a> (SHA-1, SHA-256, MD5, MD6).
+</p>
+<p><strong>Quick reference — SHA-256 example:</strong> <code>geeksforgeeks</code> →
+  <code>f8d59362da74ffe833332dc20508f12de6da6a9298c98b3b42873e7298fced78</code></p>
+
+<h3 id="sec-5-19-3">5.19.3 Asymmetric cryptography</h3>
+<p>
+  Uses a <strong>public key</strong> (encrypt or verify) and <strong>private key</strong> (decrypt or sign). Solves key
+  distribution for encryption and enables digital signatures.
+</p>
+<figure class="diagram figure-photo" aria-labelledby="fig-asym-flow-gfg-caption">
+  <img src="../../assets/images/topic-05/asymmetric-flow-gfg.png"
+       alt="Asymmetric cryptography: public key encrypts, private key decrypts"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-asym-flow-gfg-caption">Asymmetric cryptography — public and private key pair.</figcaption>
+</figure>
+
+<h4>RSA worked example (small primes)</h4>
+<p>Educational toy parameters (never use such small primes in production):</p>
+<ul>
+  <li>Choose primes: <em>p</em> = 3, <em>q</em> = 11 → <em>n</em> = <em>p</em> × <em>q</em> = 33</li>
+  <li>φ(<em>n</em>) = (<em>p</em> − 1)(<em>q</em> − 1) = 2 × 10 = 20</li>
+  <li>Public exponent <em>e</em> = 7 (coprime to 20)</li>
+  <li>Private exponent <em>d</em> = 3 (since 7 × 3 ≡ 1 (mod 20))</li>
+  <li>Message <em>M</em> = 4 → ciphertext <em>C</em> = <em>M</em><sup>e</sup> mod <em>n</em> = 4<sup>7</sup> mod 33 = <strong>31</strong></li>
+  <li>Decrypt: <em>M</em> = <em>C</em><sup>d</sup> mod <em>n</em> = 31<sup>3</sup> mod 33 = <strong>4</strong></li>
+</ul>
+<p>Full algorithm discussion: <a href="#asym-1">RSA in Section 5.13</a>.</p>
+
+<h4>Elliptic curve example</h4>
+<p>
+  ECC uses curves over finite fields. Example curve modulo 23:
+  <em>y</em><sup>2</sup> ≡ <em>x</em><sup>3</sup> + <em>x</em> + 1 (mod 23).
+  Security relies on the elliptic curve discrete logarithm problem. See <a href="#asym-2">ECC in Section 5.13</a>.
+</p>
+</section>
+<section id="sec-5-12">
+<h2>5.12 Symmetric Encryption Algorithms: High-Level Summary</h2>
+<div class="table-wrap" id="algorithm-at-a-glance">
+  <table>
+    <caption>Algorithm at a glance — when to use which family</caption>
+    <thead>
+      <tr><th>Family</th><th>Key</th><th>Best for</th><th>Examples in this topic</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Symmetric</strong></td><td>One shared secret</td><td>Bulk data encryption, disk, VPN payload</td><td>AES, ChaCha20 (via TLS)</td></tr>
+      <tr><td><strong>Asymmetric</strong></td><td>Public + private pair</td><td>Key exchange, digital signatures</td><td>RSA, ECC (see <a href="#sec-5-13">§5.13</a>)</td></tr>
+      <tr><td><strong>Hash</strong></td><td>None (one-way)</td><td>Integrity, fingerprints, password storage (with salt)</td><td>SHA-256; deep dive in <a href="06-hashing-and-digital-signatures.html">Topic 6</a></td></tr>
+    </tbody>
+  </table>
+</div>
+<p>Symmetric encryption uses a single shared secret key to both lock and unlock data. Below is a structural breakdown of the major algorithms:</p>
+<h3 id="sym-1">1. Advanced Encryption Standard (AES)</h3><p><strong>Status:</strong> Current Industry Gold Standard.</p><p><strong>Architecture:</strong> Block cipher processing 128-bit blocks of data. It supports key lengths of 128, 192, and 256 bits. It relies on a Substitution-Permutation Network (SPN) design, executing multiple complex algebraic processing rounds ($10$, $12$, or $14$ rounds depending on key size). It is fast, mathematically sound, and natively optimized in modern CPUs (AES-NI instructions).</p><h3 id="sym-2">2. Data Encryption Standard (DES)</h3><p><strong>Status:</strong> Obsolete and Highly Insecure.</p><p><strong>Architecture:</strong> Developed in the 1970s, it is a Feistel block cipher that uses a tiny 56-bit key to encrypt 64-bit blocks. Because its key space is so small ($2^{56}$), modern computers can crack it via brute force in just a few hours.</p><h3 id="sym-3">3. Triple Data Encryption Standard (3DES)</h3><p><strong>Status:</strong> Deprecated / Being Phased Out.</p><p><strong>Architecture:</strong> Created as a temporary fix for DES's small key size. It passes data through the original DES algorithm three times using up to three distinct keys ($\text{Encrypt} \rightarrow \text{Decrypt} \rightarrow \text{Encrypt}$). While secure against basic attacks, it is incredibly slow and inefficient due to the triple processing overhead.</p><h3 id="sym-4">4. Blowfish</h3><p><strong>Status:</strong> Legacy / Replaced by Twofish.</p><p><strong>Architecture:</strong> A fast, royalty-free Feistel block cipher designed by Bruce Schneier. It features a variable key length ranging from 32 bits up to 448 bits, operating on 64-bit data blocks. It is highly efficient for software applications but vulnerable to certain structural attacks on its small 64-bit block size.</p><h3 id="sym-5">5. Twofish</h3><p><strong>Status:</strong> Highly Secure Open Alternative.</p><p><strong>Architecture:</strong> The successor to Blowfish, designed to compete for the AES crown. It processes 128-bit blocks using key sizes up to 256 bits. It remains mathematically unbroken and is heavily utilized in open-source drive encryption utilities.</p><h3 id="sym-6">6. RC4 (Rivest Cipher 4)</h3><p><strong>Status:</strong> Obsolete / Strictly Prohibited.</p><p><strong>Architecture:</strong> A legacy stream cipher known for its extreme speed and simplicity. It was used in early WEP Wi-Fi security and early TLS versions. It was abandoned after cryptanalysts discovered mathematical biases in the first few bytes of its keystream, allowing attackers to reconstruct plaintexts.</p><h3 id="sym-7">7. RC5</h3><p><strong>Status:</strong> Legacy.</p><p><strong>Architecture:</strong> A parameterized block cipher featuring a variable block size (32, 64, or 128 bits), a variable key size (up to 2048 bits), and a variable number of processing rounds. It relies heavily on data-dependent bit rotations.</p><h3 id="sym-8">8. RC6</h3><p><strong>Status:</strong> Secure Alternative.</p><p><strong>Architecture:</strong> An evolution of RC5 designed specifically to meet the requirements for AES. It adds multiplication operations to the mix to provide significantly higher security and speed than RC5.</p><h3 id="sym-9">9. Serpent</h3><p><strong>Status:</strong> Exceptionally Secure Alternative.</p><p><strong>Architecture:</strong> An AES finalist. Like AES, it uses a 128-bit block size and up to 256-bit keys, but it uses a highly conservative 32-round SPN structure. It is significantly more secure and has a higher safety margin than AES, but it is noticeably slower in software implementations.</p><h3 id="sym-10">10. Camellia</h3><p><strong>Status:</strong> Secure Active Standard.</p><p><strong>Architecture:</strong> A joint development by NTT and Mitsubishi, structurally similar to AES in terms of block size (128 bits) and key lengths. It is widely approved as an international standard, particularly across Japan and European regulatory frameworks.</p><h3 id="sym-11">11. CAST-128</h3><p><strong>Status:</strong> Legacy.</p><p><strong>Architecture:</strong> A 64-bit block cipher utilizing key sizes from 40 to 128 bits. It uses a Feistel network structure and is best known as the default cipher in early versions of PGP (Pretty Good Privacy).</p><h3 id="sym-12">12. CAST-256</h3><p><strong>Status:</strong> Secure Alternative.</p><p><strong>Architecture:</strong> An extension of CAST-128 designed to handle 128-bit data blocks and key sizes up to 256 bits, serving as another alternative candidate during the global AES selection process.</p><h3 id="sym-13">13. IDEA (International Data Encryption Algorithm)</h3><p><strong>Status:</strong> Legacy.</p><p><strong>Architecture:</strong> A 64-bit block cipher that uses a 128-bit key. It relies on combining mathematical operations from completely different algebraic groups (XOR, addition modulo $2^{16}$, and multiplication modulo $2^{16} + 1$).</p><h3 id="sym-14">14. SEED</h3><p><strong>Status:</strong> Regional Standard.</p><p><strong>Architecture:</strong> A 128-bit block cipher developed by KISA (Korea Information Security Agency) to enforce domestic encryption requirements across South Korean financial services, online banking, and e-commerce networks.</p><h3 id="sym-15">15. Skipjack</h3><p><strong>Status:</strong> Declassified / Obsolete.</p><p><strong>Architecture:</strong> Developed secretly by the US National Security Agency (NSA) for the controversial Clipper Chip hardware. It uses an 80-bit key to encrypt 64-bit blocks and includes a built-in law enforcement backdoor access path called the Law Enforcement Access Field (LEAF).</p>
+</section>
+<section id="sec-5-13">
+<h2>5.13 Asymmetric Encryption Algorithms: High-Level Summary</h2>
+<p>Asymmetric encryption utilizes a mathematically linked pair of keys: a Public Key (which anyone can use to encrypt data) and a Private Key (which must be kept secret by the owner to decrypt data).</p>
+<h3 id="asym-1">1. Rivest-Shamir-Adleman (RSA)</h3>
+<p><strong>Core Principle:</strong> Relies on the extreme mathematical difficulty of Prime Factorization. It is easy to take two massive prime numbers and multiply them together, but it is computationally exhausting to reverse that process and find the prime factors of a giant composite number. It is widely used for digital signatures and secure web key exchanges, but requires large key sizes (at least 2048 or 4096 bits) to remain secure today.</p>
+<figure class="diagram figure-photo" aria-labelledby="fig-rsa-works-caption">
+  <img src="../../assets/images/topic-05/rsa-encryption-works.png"
+       alt="RSA encryption: public key encrypts, private key decrypts"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-rsa-works-caption">RSA — public key encrypts; only the matching private key decrypts.</figcaption>
+</figure>
+<h3 id="asym-2">2. Elliptic Curve Cryptography (ECC)</h3>
+<p><strong>Core Principle:</strong> Relies on the algebraic structure of elliptic curves over finite fields. ECC provides the exact same security level as RSA but with drastically smaller key sizes (e.g., a 256-bit ECC key offers equivalent security to a 3072-bit RSA key). This makes ECC much faster and highly optimized for mobile devices, smart cards, and IoT hardware.</p>
+<figure class="diagram figure-photo" aria-labelledby="fig-ecc-caption">
+  <img src="../../assets/images/topic-05/elliptic-curve.png"
+       alt="Elliptic curve cryptography over a finite field"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-ecc-caption">Elliptic curve cryptography — security from the discrete logarithm problem on curves.</figcaption>
+</figure>
+<h3 id="asym-3">3. Diffie-Hellman (DH)</h3>
+<p><strong>Core Principle:</strong> This is not actually an encryption algorithm, but a Key Exchange Protocol. It allows two completely unknown parties to negotiate and establish a shared secret key over an unsecure public network channel without ever sending the key itself across the wire. The resulting shared key is then used in high-speed symmetric ciphers (like AES).</p>
+<h3 id="asym-4">4. Digital Signature Algorithm (DSA)</h3>
+<p><strong>Core Principle:</strong> A dedicated US Federal standard designed strictly for generating digital signatures rather than data encryption. It relies on the mathematical complexity of calculating discrete logarithms.</p>
+<h3 id="asym-5">5. ElGamal</h3>
+<p><strong>Core Principle:</strong> An asymmetric system based on the Diffie-Hellman key exchange design. It is completely unpatented and formed the primary structural foundation for many features within the open-source GnuPG (GPG) system.</p>
+<h3 id="asym-6">6. Paillier Cryptosystem</h3>
+<p><strong>Core Principle:</strong> A probabilistic asymmetric algorithm based on the composite residuosity problem. It stands out because it exhibits unique homomorphic properties, allowing applications to perform additions on ciphertexts without decrypting them.</p>
+<h3 id="asym-7">7. McEliece Cryptosystem</h3>
+<p><strong>Core Principle:</strong> An asymmetric design based on algebraic Coding Theory (using error-correcting codes). It is exceptionally fast at decryption and is highly valued today because it is mathematically resistant to quantum attacks.</p>
+<h3 id="asym-8">8. NTRU (Number Theorists <span class="math-inline">R</span> Us)</h3>
+<p><strong>Core Principle:</strong> A high-speed lattice-based alternative to RSA and ECC. It relies on the mathematical difficulty of finding the shortest vector inside a complex multi-dimensional grid (lattice).</p>
+<h3 id="asym-9">9. Lattice-Based Encryption Algorithms</h3>
+<p>These algorithms hide information inside complex, multi-dimensional geometric grids (lattices) consisting of millions of coordinate points. They form the primary foundation for modern Post-Quantum Cryptography because quantum computers lack the specific algorithms needed to solve these multi-dimensional geometric puzzles efficiently.</p>
+<h4>a. Learning With Errors (LWE)</h4><p>A foundational mathematical problem that introduces random linear algebraic "errors" into equations, making them impossible to solve without a secret key.</p>
+<h4>b. Ring Learning With Errors (RLWE)</h4><p>An optimized version of LWE that uses polynomial rings, dramatically reducing key sizes and accelerating processing speeds.</p>
+<h4>c. NTRU Prime</h4><p>An advanced variant of the NTRU lattice model tweaked to eliminate hidden mathematical behaviors, reducing the risk of targeted cryptanalytic attacks.</p>
+<h4>d. NewHope</h4><p>A quantum-resistant key-exchange protocol built on the Ring-LWE problem, famously tested by Google to secure real-world Chrome browser traffic.</p>
+<h3 id="asym-10">10. Merkle-Damgård-based Signature Scheme (MSS)</h3>
+<p><strong>Core Principle:</strong> An early, mathematically sound method for building digital signatures using cryptographic hash functions rather than standard asymmetric number theory.</p>
+<h3 id="asym-11">11. RSA-KEM (Key Encapsulation Mechanism)</h3>
+<p><strong>Core Principle:</strong> A modern hybrid framework where RSA is used to securely "wrap" or encapsulate a high-speed symmetric AES session key, combining the ease of asymmetric deployment with the raw speed of symmetric ciphers.</p>
+<h3 id="asym-12">12. Identity-Based Encryption (IBE)</h3>
+<p><strong>Core Principle:</strong> An asymmetric approach where a user's public key can be a completely arbitrary real-world string—such as an email address or a domain name. A central authority calculates the matching private key on demand.</p>
+<h3 id="asym-13">13. Attribute-Based Encryption (ABE)</h3>
+<p><strong>Core Principle:</strong> An advanced system where ciphertexts are encrypted using a set of complex access conditions (attributes). A user can only decrypt the file if their verified cryptographic credential matches the required attribute profile.</p>
+<h3 id="asym-14">14. Homomorphic Encryption</h3>
+<p>A cutting-edge form of cryptography that allows computers to perform mathematical calculations directly on encrypted data. The output remains fully encrypted, and when decrypted by the data owner, it yields the exact correct result as if the operations were run on plaintext.</p>
+<h4>a. Partially Homomorphic Encryption (PHE)</h4><p>Supports only one mathematical operation on encrypted data (either only addition, like the Paillier system, or only multiplication, like RSA).</p>
+<h4>b. Fully Homomorphic Encryption (FHE)</h4><p>The holy grail of data privacy. It supports both addition and multiplication operations simultaneously. This allows cloud computing environments to process and analyze ultra-sensitive financial or health records without ever seeing the raw data.</p>
+<h3 id="asym-15">15. Post-Quantum Cryptography (PQC) Algorithms</h3>
+<p>Standard asymmetric algorithms (RSA, ECC, Diffie-Hellman) are highly vulnerable to Shor's Algorithm running on a sufficiently powerful quantum computer. Shor's algorithm can solve prime factorizations and discrete logarithms almost instantly, rendering modern public-key encryption obsolete. PQC algorithms are entirely new mathematical frameworks designed to withstand these quantum attacks.</p>
+<h4>a. Code-Based Cryptography</h4><p>Relies on error-correcting codes (e.g., the McEliece cryptosystem). They require very large public keys but are highly secure and process data quickly.</p>
+<h4>b. Lattice-Based Cryptography</h4><p>Built on multi-dimensional geometric lattice vectors. This is the most popular category of PQC, forming the basis for new standards like CRYSTALS-Kyber and CRYSTALS-Dilithium.</p>
+<h4>c. Multivariate Cryptography</h4><p>Relies on the immense difficulty of solving complex systems of non-linear, multivariate polynomial equations.</p>
+<h4>d. Supersingular Isogeny Diffie-Hellman (SIDH)</h4><p>An asymmetric setup based on maps (isogenies) between elliptic curves. It offered very small keys, but recent mathematical breakthroughs exposed structural vulnerabilities.</p>
+<h4>e. Hash-Based Cryptography</h4><p>Builds digital signatures purely out of the mathematics of secure hash functions (e.g., SPHINCS+). It is highly trusted because its security relies entirely on the strength of hashing algorithms, which are already resistant to quantum cracking.</p>
+<h4>f. Quantum Key Distribution (QKD)</h4><p>This is not a software algorithm, but a physical hardware implementation that uses the laws of quantum mechanics (transmitting individual light photons over fiber-optic cables) to create an unhackable key exchange channel. If an attacker tries to eavesdrop on the fiber line, they alter the physical state of the photons, instantly alerting both parties to the interception.</p>
+</section>
+<section id="sec-5-11">
+<h2>5.11 Cryptographic Hashing</h2>
+<div class="callout canonical">
+  <div class="callout-title">Operational depth — Topic 6</div>
+  <p>Hash properties and algorithm walkthroughs below. For birthday paradox, HMAC, and digital signatures see <a href="06-hashing-and-digital-signatures.html">Topic 6 — Hashing and Digital Signatures</a>.</p>
+</div>
+<p>A cryptographic hash function is a mathematical algorithm that takes an input (or &quot;message&quot;) of any arbitrary length and maps it to a fixed-length string of alphanumeric characters, known as a <strong>hash value</strong>, <strong>digest</strong>, or <strong>checksum</strong>. Hashing is strictly a one-way function; it is mathematically impossible to reverse a hash value back into its original input data.</p>
+<h3>Core properties of a secure hash</h3>
+<ul>
+  <li><strong>Deterministic:</strong> The exact same input will always produce the exact same output hash, no matter how many times it is processed.</li>
+  <li><strong>Pre-image resistance (one-way):</strong> Given a hash value <em>H</em>, it must be computationally impossible to find the original input string <em>x</em> such that Hash(x) = H.</li>
+  <li><strong>Second pre-image resistance:</strong> Given a specific input <em>x₁</em>, it must be computationally impossible to find a different input <em>x₂</em> that produces the exact same hash value.</li>
+  <li><strong>Collision resistance:</strong> It must be exceptionally difficult to find any two arbitrary, completely different inputs that yield identical hash digests. When two different files produce the same hash, it is called a <strong>collision</strong> (which breaks the integrity value of the hash).</li>
+  <li><strong>Avalanche effect:</strong> A tiny modification to the input (like changing an uppercase letter to lowercase, or adding a single period) must cause the resulting hash output to change so drastically that it appears completely uncorrelated to the original output.</li>
+</ul>
+
+<h3>SHA-1 (Secure Hash Algorithm 1)</h3>
+<p>
+  SHA-1 was developed by the NSA and published by NIST in 1995. It produces a fixed <strong>160-bit (20-byte)</strong> digest.
+  It is now considered weak for security purposes due to practical collision attacks; do not use for new designs.
+</p>
+<figure class="diagram figure-photo" aria-labelledby="fig-sha1-block-caption">
+  <img src="../../assets/images/topic-05/sha1-block-diagram.png"
+       alt="SHA-1 algorithm block diagram showing padding, rounds, and key schedule"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-sha1-block-caption">SHA-1 block diagram — message padding, 80 rounds, and round-key generation.</figcaption>
+</figure>
+<figure class="diagram figure-photo" aria-labelledby="fig-sha1-gen-caption">
+  <img src="../../assets/images/topic-05/sha1-generator.png"
+       alt="SHA-1 hash generator converting input text to a 40-character hexadecimal digest"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-sha1-gen-caption">Example SHA-1 hash generator output for a sample string.</figcaption>
+</figure>
+
+<h3>SHA-256</h3>
+<p>
+  SHA-256 belongs to the SHA-2 family and produces a fixed <strong>256-bit (32-byte)</strong> digest. It is widely used
+  for integrity verification, digital signatures, blockchain, and password hashing (with proper salting).
+</p>
+<figure class="diagram figure-photo" aria-labelledby="fig-sha256-caption">
+  <img src="../../assets/images/topic-05/sha256-diagram.png"
+       alt="SHA-256: plaintext input through hash function to fixed-length hash value"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-sha256-caption">SHA-256 converts arbitrary input into a fixed-length hash digest.</figcaption>
+</figure>
+<p><strong>Example:</strong></p>
+<ul>
+  <li>Data: <code>geeksforgeeks</code></li>
+  <li>SHA-256: <code>f8d59362da74ffe833332dc20508f12de6da6a9298c98b3b42873e7298fced78</code></li>
+</ul>
+
+<h3>MD5</h3>
+<p>
+  MD5 produces a <strong>128-bit</strong> digest (32 hexadecimal characters). It was widely used for checksums and file
+  verification but is cryptographically broken for collision resistance; use SHA-256 or SHA-3 instead for security.
+</p>
+<figure class="diagram figure-photo" aria-labelledby="fig-md5-caption">
+  <img src="../../assets/images/topic-05/md5-hashing.png"
+       alt="MD5 hashing: identical input always produces the same fixed-length digest"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-md5-caption">MD5 — deterministic one-way hashing of input to a 128-bit digest.</figcaption>
+</figure>
+
+<h3>MD6</h3>
+<p>
+  MD6 was designed by Ronald Rivest and colleagues in 2008 as a successor to MD4/MD5. It uses a tree-based structure
+  suitable for parallel processing and supports variable output lengths (128, 256, 512 bits).
+</p>
+<figure class="diagram figure-photo" aria-labelledby="fig-md6-tree-caption">
+  <img src="../../assets/images/topic-05/md6-tree.png"
+       alt="MD6 tree structure splitting input into hierarchical blocks"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-md6-tree-caption">MD6 organizes input in a tree structure for parallel hashing.</figcaption>
+</figure>
+<figure class="diagram figure-photo" aria-labelledby="fig-md6-gen-caption">
+  <img src="../../assets/images/topic-05/md6-generator.png"
+       alt="MD6 hash generator showing 128-bit, 256-bit, and 512-bit outputs"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-md6-gen-caption">MD6 generator — same input with different output bit lengths.</figcaption>
+</figure>
+</section>
+<section id="sec-5-9">
+<h2>5.9 Key Space and Cryptographic Strength</h2>
+<p>The strength of a cipher does not rely on keeping the algorithm secret; it depends on the size and randomness of its <strong>key space</strong>.</p>
+<p><strong>Definition:</strong> Key space is the total number of possible key combinations that can be generated by a specific cryptographic algorithm. It is determined by the key length in bits.</p>
+<p><strong>The mathematics of key space:</strong> If a cipher uses a key length of <em>n</em> bits, the total size of the key space is:</p>
+<div class="formula">Key Space = 2^n</div>
+<h3>Bypassing via brute-force attacks</h3>
+<p>A brute-force attack is an automated cryptanalytic approach where an attacker uses high-powered computers to systematically test every single possible key combination in the key space until they find the one that decrypts the ciphertext into readable plaintext.</p>
+<p><strong>Small key space (vulnerable):</strong> The historic DES (Data Encryption Standard) algorithm uses a 56-bit key length. This means its key space is 2<sup>56</sup> combinations (approximately 7.2 × 10<sup>16</sup>). While this seemed massive in the 1970s, modern computers can search this entire key space and crack a DES key in a matter of hours.</p>
+<p><strong>Large key space (secure):</strong> Modern AES-256 uses a 256-bit key length. Its key space is 2<sup>256</sup> combinations. To put this in perspective: 2<sup>256</sup> is a number so incredibly large that if you turned every single atom in the observable universe into a supercomputer, and had them test a billion keys per second since the beginning of time, they would still have checked only a tiny fraction of the total key space. AES-256 is mathematically secure against brute-force attacks with current computing technology.</p>
+</section>
+<section id="sec-5-10">
+<h2>5.10 Steganography vs. Cryptography</h2>
+<p>While <strong>Cryptography</strong> focuses on making the content of a message unreadable, <strong>Steganography</strong> focuses on hiding the very existence of the communication itself. The word comes from the Greek <em>steganós</em>, meaning &quot;covered&quot; or &quot;concealed.&quot;</p>
+<p><strong>How it works:</strong> A secret message (the payload) is embedded inside an ordinary, non-secret file (the carrier), such as a digital image, an audio file, or a video clip. The most common technical method is <strong>Least Significant Bit (LSB) Insertion</strong>.</p>
+<p>In a standard 24-bit bitmap image, each pixel is made up of 3 bytes representing Red, Green, and Blue (RGB). The last bit (the least significant bit) of these bytes contributes almost nothing to the visual color depth. A steganography tool replaces these LSBs with the binary bits of a secret text file. To the human eye, the altered image looks completely identical to the original.</p>
+<p><strong>The security flaw:</strong> Steganography relies entirely on secrecy rather than mathematical strength. If an adversary discovers that an image contains hidden data, they can easily extract the payload using automated tools. Therefore, in professional security architecture, data is typically encrypted first using cryptography, and then hidden using steganography.</p>
+
+<figure class="diagram figure-photo" aria-labelledby="fig-stego-gfg-caption">
+  <img src="../../assets/images/topic-05/steganography-gfg.png"
+       alt="Steganography: hiding data inside ordinary files such as images"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-stego-gfg-caption">Steganography conceals the existence of hidden data inside a carrier file.</figcaption>
+</figure>
+
+<h3>Common types of steganography</h3>
+<div class="table-wrap">
+  <table>
+    <caption>Types of steganography</caption>
+    <thead>
+      <tr><th>Type</th><th>Method</th><th>Real-life use</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Image (LSB)</strong></td><td>Data hidden in least significant bits of pixels</td><td>Malware C2, CTF challenges</td></tr>
+      <tr><td><strong>Text</strong></td><td>Invisible characters, spaces, or misspellings</td><td>Covert communication in censored regions</td></tr>
+      <tr><td><strong>Audio</strong></td><td>Messages embedded in audio signals</td><td>Watermarking, espionage</td></tr>
+      <tr><td><strong>Video</strong></td><td>Information in frames or metadata</td><td>Covert data exfiltration</td></tr>
+      <tr><td><strong>Metadata</strong></td><td>Payload in EXIF or file headers</td><td>Hiding links in innocent-looking files</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Tools for steganography practice</h3>
+<div class="table-wrap">
+  <table>
+    <caption>Common steganography tools</caption>
+    <thead>
+      <tr><th>Tool</th><th>Use</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Steghide</strong></td><td>Hide or extract data from images and audio</td></tr>
+      <tr><td><strong>zsteg</strong></td><td>Analyze PNG/BMP for hidden messages</td></tr>
+      <tr><td><strong>ExifTool</strong></td><td>Extract metadata from images</td></tr>
+      <tr><td><strong>binwalk</strong></td><td>Extract embedded content from binaries</td></tr>
+      <tr><td><strong>strings</strong></td><td>Find readable text inside files</td></tr>
+      <tr><td><strong>stegsolve.jar</strong></td><td>GUI tool to analyze image channels</td></tr>
+    </tbody>
+  </table>
+</div>
 </section>
 <section id="sec-5-8">
 <h2>5.8 Network-Level Encryption Deployment: Link vs. End-to-End</h2>
@@ -351,87 +845,6 @@
   <figcaption id="fig-e2ee-caption">End-to-end encryption vs hop-by-hop link encryption.</figcaption>
 </figure>
 </section>
-<section id="sec-5-9">
-<h2>5.9 Key Space and Cryptographic Strength</h2>
-<p>The strength of a cipher does not rely on keeping the algorithm secret; it depends on the size and randomness of its <strong>key space</strong>.</p>
-<p><strong>Definition:</strong> Key space is the total number of possible key combinations that can be generated by a specific cryptographic algorithm. It is determined by the key length in bits.</p>
-<p><strong>The mathematics of key space:</strong> If a cipher uses a key length of <em>n</em> bits, the total size of the key space is:</p>
-<div class="formula">Key Space = 2^n</div>
-<h3>Bypassing via brute-force attacks</h3>
-<p>A brute-force attack is an automated cryptanalytic approach where an attacker uses high-powered computers to systematically test every single possible key combination in the key space until they find the one that decrypts the ciphertext into readable plaintext.</p>
-<p><strong>Small key space (vulnerable):</strong> The historic DES (Data Encryption Standard) algorithm uses a 56-bit key length. This means its key space is 2<sup>56</sup> combinations (approximately 7.2 × 10<sup>16</sup>). While this seemed massive in the 1970s, modern computers can search this entire key space and crack a DES key in a matter of hours.</p>
-<p><strong>Large key space (secure):</strong> Modern AES-256 uses a 256-bit key length. Its key space is 2<sup>256</sup> combinations. To put this in perspective: 2<sup>256</sup> is a number so incredibly large that if you turned every single atom in the observable universe into a supercomputer, and had them test a billion keys per second since the beginning of time, they would still have checked only a tiny fraction of the total key space. AES-256 is mathematically secure against brute-force attacks with current computing technology.</p>
-</section>
-<section id="sec-5-10">
-<h2>5.10 Steganography vs. Cryptography</h2>
-<p>While <strong>Cryptography</strong> focuses on making the content of a message unreadable, <strong>Steganography</strong> focuses on hiding the very existence of the communication itself. The word comes from the Greek <em>steganós</em>, meaning &quot;covered&quot; or &quot;concealed.&quot;</p>
-<p><strong>How it works:</strong> A secret message (the payload) is embedded inside an ordinary, non-secret file (the carrier), such as a digital image, an audio file, or a video clip. The most common technical method is <strong>Least Significant Bit (LSB) Insertion</strong>.</p>
-<p>In a standard 24-bit bitmap image, each pixel is made up of 3 bytes representing Red, Green, and Blue (RGB). The last bit (the least significant bit) of these bytes contributes almost nothing to the visual color depth. A steganography tool replaces these LSBs with the binary bits of a secret text file. To the human eye, the altered image looks completely identical to the original.</p>
-<p><strong>The security flaw:</strong> Steganography relies entirely on secrecy rather than mathematical strength. If an adversary discovers that an image contains hidden data, they can easily extract the payload using automated tools. Therefore, in professional security architecture, data is typically encrypted first using cryptography, and then hidden using steganography.</p>
-</section>
-<section id="sec-5-11">
-<h2>5.11 Cryptographic Hashing</h2>
-<p>A cryptographic hash function is a mathematical algorithm that takes an input (or &quot;message&quot;) of any arbitrary length and maps it to a fixed-length string of alphanumeric characters, known as a <strong>hash value</strong>, <strong>digest</strong>, or <strong>checksum</strong>. Hashing is strictly a one-way function; it is mathematically impossible to reverse a hash value back into its original input data.</p>
-<h3>Core properties of a secure hash</h3>
-<ul>
-  <li><strong>Deterministic:</strong> The exact same input will always produce the exact same output hash, no matter how many times it is processed.</li>
-  <li><strong>Pre-image resistance (one-way):</strong> Given a hash value <em>H</em>, it must be computationally impossible to find the original input string <em>x</em> such that Hash(x) = H.</li>
-  <li><strong>Second pre-image resistance:</strong> Given a specific input <em>x₁</em>, it must be computationally impossible to find a different input <em>x₂</em> that produces the exact same hash value.</li>
-  <li><strong>Collision resistance:</strong> It must be exceptionally difficult to find any two arbitrary, completely different inputs that yield identical hash digests. When two different files produce the same hash, it is called a <strong>collision</strong> (which breaks the integrity value of the hash).</li>
-  <li><strong>Avalanche effect:</strong> A tiny modification to the input (like changing an uppercase letter to lowercase, or adding a single period) must cause the resulting hash output to change so drastically that it appears completely uncorrelated to the original output.</li>
-</ul>
-</section>
-<section id="sec-5-12">
-<h2>5.12 Symmetric Encryption Algorithms: High-Level Summary</h2>
-<p>Symmetric encryption uses a single shared secret key to both lock and unlock data. Below is a structural breakdown of the major algorithms:</p>
-<h3 id="sym-1">1. Advanced Encryption Standard (AES)</h3><p><strong>Status:</strong> Current Industry Gold Standard.</p><p><strong>Architecture:</strong> Block cipher processing 128-bit blocks of data. It supports key lengths of 128, 192, and 256 bits. It relies on a Substitution-Permutation Network (SPN) design, executing multiple complex algebraic processing rounds ($10$, $12$, or $14$ rounds depending on key size). It is fast, mathematically sound, and natively optimized in modern CPUs (AES-NI instructions).</p><h3 id="sym-2">2. Data Encryption Standard (DES)</h3><p><strong>Status:</strong> Obsolete and Highly Insecure.</p><p><strong>Architecture:</strong> Developed in the 1970s, it is a Feistel block cipher that uses a tiny 56-bit key to encrypt 64-bit blocks. Because its key space is so small ($2^{56}$), modern computers can crack it via brute force in just a few hours.</p><h3 id="sym-3">3. Triple Data Encryption Standard (3DES)</h3><p><strong>Status:</strong> Deprecated / Being Phased Out.</p><p><strong>Architecture:</strong> Created as a temporary fix for DES's small key size. It passes data through the original DES algorithm three times using up to three distinct keys ($\text{Encrypt} \rightarrow \text{Decrypt} \rightarrow \text{Encrypt}$). While secure against basic attacks, it is incredibly slow and inefficient due to the triple processing overhead.</p><h3 id="sym-4">4. Blowfish</h3><p><strong>Status:</strong> Legacy / Replaced by Twofish.</p><p><strong>Architecture:</strong> A fast, royalty-free Feistel block cipher designed by Bruce Schneier. It features a variable key length ranging from 32 bits up to 448 bits, operating on 64-bit data blocks. It is highly efficient for software applications but vulnerable to certain structural attacks on its small 64-bit block size.</p><h3 id="sym-5">5. Twofish</h3><p><strong>Status:</strong> Highly Secure Open Alternative.</p><p><strong>Architecture:</strong> The successor to Blowfish, designed to compete for the AES crown. It processes 128-bit blocks using key sizes up to 256 bits. It remains mathematically unbroken and is heavily utilized in open-source drive encryption utilities.</p><h3 id="sym-6">6. RC4 (Rivest Cipher 4)</h3><p><strong>Status:</strong> Obsolete / Strictly Prohibited.</p><p><strong>Architecture:</strong> A legacy stream cipher known for its extreme speed and simplicity. It was used in early WEP Wi-Fi security and early TLS versions. It was abandoned after cryptanalysts discovered mathematical biases in the first few bytes of its keystream, allowing attackers to reconstruct plaintexts.</p><h3 id="sym-7">7. RC5</h3><p><strong>Status:</strong> Legacy.</p><p><strong>Architecture:</strong> A parameterized block cipher featuring a variable block size (32, 64, or 128 bits), a variable key size (up to 2048 bits), and a variable number of processing rounds. It relies heavily on data-dependent bit rotations.</p><h3 id="sym-8">8. RC6</h3><p><strong>Status:</strong> Secure Alternative.</p><p><strong>Architecture:</strong> An evolution of RC5 designed specifically to meet the requirements for AES. It adds multiplication operations to the mix to provide significantly higher security and speed than RC5.</p><h3 id="sym-9">9. Serpent</h3><p><strong>Status:</strong> Exceptionally Secure Alternative.</p><p><strong>Architecture:</strong> An AES finalist. Like AES, it uses a 128-bit block size and up to 256-bit keys, but it uses a highly conservative 32-round SPN structure. It is significantly more secure and has a higher safety margin than AES, but it is noticeably slower in software implementations.</p><h3 id="sym-10">10. Camellia</h3><p><strong>Status:</strong> Secure Active Standard.</p><p><strong>Architecture:</strong> A joint development by NTT and Mitsubishi, structurally similar to AES in terms of block size (128 bits) and key lengths. It is widely approved as an international standard, particularly across Japan and European regulatory frameworks.</p><h3 id="sym-11">11. CAST-128</h3><p><strong>Status:</strong> Legacy.</p><p><strong>Architecture:</strong> A 64-bit block cipher utilizing key sizes from 40 to 128 bits. It uses a Feistel network structure and is best known as the default cipher in early versions of PGP (Pretty Good Privacy).</p><h3 id="sym-12">12. CAST-256</h3><p><strong>Status:</strong> Secure Alternative.</p><p><strong>Architecture:</strong> An extension of CAST-128 designed to handle 128-bit data blocks and key sizes up to 256 bits, serving as another alternative candidate during the global AES selection process.</p><h3 id="sym-13">13. IDEA (International Data Encryption Algorithm)</h3><p><strong>Status:</strong> Legacy.</p><p><strong>Architecture:</strong> A 64-bit block cipher that uses a 128-bit key. It relies on combining mathematical operations from completely different algebraic groups (XOR, addition modulo $2^{16}$, and multiplication modulo $2^{16} + 1$).</p><h3 id="sym-14">14. SEED</h3><p><strong>Status:</strong> Regional Standard.</p><p><strong>Architecture:</strong> A 128-bit block cipher developed by KISA (Korea Information Security Agency) to enforce domestic encryption requirements across South Korean financial services, online banking, and e-commerce networks.</p><h3 id="sym-15">15. Skipjack</h3><p><strong>Status:</strong> Declassified / Obsolete.</p><p><strong>Architecture:</strong> Developed secretly by the US National Security Agency (NSA) for the controversial Clipper Chip hardware. It uses an 80-bit key to encrypt 64-bit blocks and includes a built-in law enforcement backdoor access path called the Law Enforcement Access Field (LEAF).</p>
-</section>
-<section id="sec-5-13">
-<h2>5.13 Asymmetric Encryption Algorithms: High-Level Summary</h2>
-<p>Asymmetric encryption utilizes a mathematically linked pair of keys: a Public Key (which anyone can use to encrypt data) and a Private Key (which must be kept secret by the owner to decrypt data).</p>
-<h3 id="asym-1">1. Rivest-Shamir-Adleman (RSA)</h3>
-<p><strong>Core Principle:</strong> Relies on the extreme mathematical difficulty of Prime Factorization. It is easy to take two massive prime numbers and multiply them together, but it is computationally exhausting to reverse that process and find the prime factors of a giant composite number. It is widely used for digital signatures and secure web key exchanges, but requires large key sizes (at least 2048 or 4096 bits) to remain secure today.</p>
-<h3 id="asym-2">2. Elliptic Curve Cryptography (ECC)</h3>
-<p><strong>Core Principle:</strong> Relies on the algebraic structure of elliptic curves over finite fields. ECC provides the exact same security level as RSA but with drastically smaller key sizes (e.g., a 256-bit ECC key offers equivalent security to a 3072-bit RSA key). This makes ECC much faster and highly optimized for mobile devices, smart cards, and IoT hardware.</p>
-<h3 id="asym-3">3. Diffie-Hellman (DH)</h3>
-<p><strong>Core Principle:</strong> This is not actually an encryption algorithm, but a Key Exchange Protocol. It allows two completely unknown parties to negotiate and establish a shared secret key over an unsecure public network channel without ever sending the key itself across the wire. The resulting shared key is then used in high-speed symmetric ciphers (like AES).</p>
-<h3 id="asym-4">4. Digital Signature Algorithm (DSA)</h3>
-<p><strong>Core Principle:</strong> A dedicated US Federal standard designed strictly for generating digital signatures rather than data encryption. It relies on the mathematical complexity of calculating discrete logarithms.</p>
-<h3 id="asym-5">5. ElGamal</h3>
-<p><strong>Core Principle:</strong> An asymmetric system based on the Diffie-Hellman key exchange design. It is completely unpatented and formed the primary structural foundation for many features within the open-source GnuPG (GPG) system.</p>
-<h3 id="asym-6">6. Paillier Cryptosystem</h3>
-<p><strong>Core Principle:</strong> A probabilistic asymmetric algorithm based on the composite residuosity problem. It stands out because it exhibits unique homomorphic properties, allowing applications to perform additions on ciphertexts without decrypting them.</p>
-<h3 id="asym-7">7. McEliece Cryptosystem</h3>
-<p><strong>Core Principle:</strong> An asymmetric design based on algebraic Coding Theory (using error-correcting codes). It is exceptionally fast at decryption and is highly valued today because it is mathematically resistant to quantum attacks.</p>
-<h3 id="asym-8">8. NTRU (Number Theorists <span class="math-inline">R</span> Us)</h3>
-<p><strong>Core Principle:</strong> A high-speed lattice-based alternative to RSA and ECC. It relies on the mathematical difficulty of finding the shortest vector inside a complex multi-dimensional grid (lattice).</p>
-<h3 id="asym-9">9. Lattice-Based Encryption Algorithms</h3>
-<p>These algorithms hide information inside complex, multi-dimensional geometric grids (lattices) consisting of millions of coordinate points. They form the primary foundation for modern Post-Quantum Cryptography because quantum computers lack the specific algorithms needed to solve these multi-dimensional geometric puzzles efficiently.</p>
-<h4>a. Learning With Errors (LWE)</h4><p>A foundational mathematical problem that introduces random linear algebraic "errors" into equations, making them impossible to solve without a secret key.</p>
-<h4>b. Ring Learning With Errors (RLWE)</h4><p>An optimized version of LWE that uses polynomial rings, dramatically reducing key sizes and accelerating processing speeds.</p>
-<h4>c. NTRU Prime</h4><p>An advanced variant of the NTRU lattice model tweaked to eliminate hidden mathematical behaviors, reducing the risk of targeted cryptanalytic attacks.</p>
-<h4>d. NewHope</h4><p>A quantum-resistant key-exchange protocol built on the Ring-LWE problem, famously tested by Google to secure real-world Chrome browser traffic.</p>
-<h3 id="asym-10">10. Merkle-Damgård-based Signature Scheme (MSS)</h3>
-<p><strong>Core Principle:</strong> An early, mathematically sound method for building digital signatures using cryptographic hash functions rather than standard asymmetric number theory.</p>
-<h3 id="asym-11">11. RSA-KEM (Key Encapsulation Mechanism)</h3>
-<p><strong>Core Principle:</strong> A modern hybrid framework where RSA is used to securely "wrap" or encapsulate a high-speed symmetric AES session key, combining the ease of asymmetric deployment with the raw speed of symmetric ciphers.</p>
-<h3 id="asym-12">12. Identity-Based Encryption (IBE)</h3>
-<p><strong>Core Principle:</strong> An asymmetric approach where a user's public key can be a completely arbitrary real-world string—such as an email address or a domain name. A central authority calculates the matching private key on demand.</p>
-<h3 id="asym-13">13. Attribute-Based Encryption (ABE)</h3>
-<p><strong>Core Principle:</strong> An advanced system where ciphertexts are encrypted using a set of complex access conditions (attributes). A user can only decrypt the file if their verified cryptographic credential matches the required attribute profile.</p>
-<h3 id="asym-14">14. Homomorphic Encryption</h3>
-<p>A cutting-edge form of cryptography that allows computers to perform mathematical calculations directly on encrypted data. The output remains fully encrypted, and when decrypted by the data owner, it yields the exact correct result as if the operations were run on plaintext.</p>
-<h4>a. Partially Homomorphic Encryption (PHE)</h4><p>Supports only one mathematical operation on encrypted data (either only addition, like the Paillier system, or only multiplication, like RSA).</p>
-<h4>b. Fully Homomorphic Encryption (FHE)</h4><p>The holy grail of data privacy. It supports both addition and multiplication operations simultaneously. This allows cloud computing environments to process and analyze ultra-sensitive financial or health records without ever seeing the raw data.</p>
-<h3 id="asym-15">15. Post-Quantum Cryptography (PQC) Algorithms</h3>
-<p>Standard asymmetric algorithms (RSA, ECC, Diffie-Hellman) are highly vulnerable to Shor's Algorithm running on a sufficiently powerful quantum computer. Shor's algorithm can solve prime factorizations and discrete logarithms almost instantly, rendering modern public-key encryption obsolete. PQC algorithms are entirely new mathematical frameworks designed to withstand these quantum attacks.</p>
-<h4>a. Code-Based Cryptography</h4><p>Relies on error-correcting codes (e.g., the McEliece cryptosystem). They require very large public keys but are highly secure and process data quickly.</p>
-<h4>b. Lattice-Based Cryptography</h4><p>Built on multi-dimensional geometric lattice vectors. This is the most popular category of PQC, forming the basis for new standards like CRYSTALS-Kyber and CRYSTALS-Dilithium.</p>
-<h4>c. Multivariate Cryptography</h4><p>Relies on the immense difficulty of solving complex systems of non-linear, multivariate polynomial equations.</p>
-<h4>d. Supersingular Isogeny Diffie-Hellman (SIDH)</h4><p>An asymmetric setup based on maps (isogenies) between elliptic curves. It offered very small keys, but recent mathematical breakthroughs exposed structural vulnerabilities.</p>
-<h4>e. Hash-Based Cryptography</h4><p>Builds digital signatures purely out of the mathematics of secure hash functions (e.g., SPHINCS+). It is highly trusted because its security relies entirely on the strength of hashing algorithms, which are already resistant to quantum cracking.</p>
-<h4>f. Quantum Key Distribution (QKD)</h4><p>This is not a software algorithm, but a physical hardware implementation that uses the laws of quantum mechanics (transmitting individual light photons over fiber-optic cables) to create an unhackable key exchange channel. If an attacker tries to eavesdrop on the fiber line, they alter the physical state of the photons, instantly alerting both parties to the interception.</p>
-</section>
 <section id="sec-5-14">
 <h2>5.14 Network Security Architectures: HTTPS and E2EE</h2>
 <h3>1. Public and Private Keys (The Core Asymmetric Rule)</h3>
@@ -465,11 +878,159 @@
 </figure>
 
 </section>
-      <footer class="page-footer">
+<section id="sec-5-15">
+<h2>5.15 Encryption Features and Importance</h2>
+<div class="callout canonical">
+  <div class="callout-title">Encryption benefits recap</div>
+  <p>Builds on <a href="#sec-5-4">§5.4 Encryption process</a> and <a href="#sec-5-14">§5.14 HTTPS/E2EE</a>. Goals: <a href="#sec-5-2">§5.2</a>.</p>
+</div>
+<p>
+  Encryption is a cryptographic process that transforms readable data (plaintext) into an unreadable format (ciphertext)
+  using a cipher and key. Only authorized parties with the correct decryption key can recover the original message.
+  The features in <a href="#sec-5-2">Section 5.2</a> (confidentiality through access control) describe what strong
+  encryption delivers in practice.
+</p>
+<p>
+  The importance of encryption cannot be overstated. Even when data sits on a secured system, it can still be exposed
+  through breaches or theft. Encrypting data before it leaves a trusted environment means that copies on portable
+  media or intercepted network traffic remain unintelligible without the key—demonstrating why encryption is essential
+  for personal, financial, and organizational information.
+</p>
+</section>
+<section id="sec-5-16">
+<h2>5.16 Benefits, Challenges, Uses, and Trade-offs</h2>
+<div class="callout canonical">
+  <div class="callout-title">Trade-offs recap</div>
+  <p>Complements <a href="#sec-5-15">§5.15</a> and deployment context in <a href="#sec-5-14">§5.14</a>.</p>
+</div>
+
+<h3>Benefits and challenges of encryption</h3>
+<div class="table-wrap">
+  <table>
+    <caption>Benefits and challenges of encryption</caption>
+    <thead>
+      <tr><th>Benefits</th><th>Challenges</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <ul>
+            <li><strong>Data protection:</strong> Safeguards sensitive information from unauthorized access</li>
+            <li><strong>Confidentiality:</strong> Only authorized parties can read ciphertext</li>
+            <li><strong>Data integrity:</strong> Detects unauthorized changes during transmission</li>
+            <li><strong>Regulatory compliance:</strong> Supports GDPR, HIPAA, PCI-DSS, and similar frameworks</li>
+            <li><strong>Non-repudiation:</strong> Digital signatures provide proof of origin</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li><strong>Complexity:</strong> Encryption and decryption can be resource-intensive</li>
+            <li><strong>Key management:</strong> Loss or mishandling of keys can cause permanent data loss</li>
+            <li><strong>Cost:</strong> Large-scale deployment needs infrastructure and maintenance</li>
+            <li><strong>Performance impact:</strong> High-volume or real-time systems may slow down</li>
+            <li><strong>Integration complexity:</strong> May require major changes to existing workflows</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Uses of data encryption</h3>
+<ul>
+  <li><strong>Digital signatures:</strong> Prove integrity and authenticity of information</li>
+  <li><strong>Digital rights management (DRM) and copy protection:</strong> Control how content is used</li>
+  <li><strong>Secure deletion:</strong> Encrypt data first, then discard the key so recovery yields only ciphertext</li>
+  <li><strong>Data migration:</strong> Protect data while transferring over networks</li>
+  <li><strong>VPNs:</strong> Encrypt traffic across untrusted networks</li>
+  <li><strong>Cloud storage:</strong> Encrypt sensitive files and backups before upload</li>
+</ul>
+
+<h3>Advantages of data encryption</h3>
+<ul>
+  <li>Keeps information separate from the security of the device storing it</li>
+  <li>Allows administrators to send data over insecure channels more safely</li>
+  <li>Improves overall security posture when keys and algorithms are chosen well</li>
+</ul>
+
+<h3>Disadvantages of data encryption</h3>
+<ul>
+  <li>If a password or key is lost, encrypted data may be permanently inaccessible</li>
+  <li>Weak or simple keys undermine security despite using encryption</li>
+  <li>Requires processing time, skilled administration, and ongoing key management</li>
+  <li>Layering multiple tools can complicate operations for users and staff</li>
+  <li>Unrealistic expectations about what encryption alone can fix may weaken overall protection</li>
+</ul>
+</section>
+<section id="sec-5-20">
+<h2>5.20 Applications of Cryptography</h2>
+<p>Cryptography appears throughout everyday digital life:</p>
+<ul>
+  <li><strong>Password hashing:</strong> Stored credentials use salted hashes (bcrypt, Argon2) — see <a href="#sec-5-11">hashing</a>.</li>
+  <li><strong>Digital currencies:</strong> Blockchain integrity via hash chains and digital signatures.</li>
+  <li><strong>HTTPS:</strong> TLS combines asymmetric key exchange with symmetric bulk encryption — <a href="#sec-5-14">Section 5.14</a>.</li>
+  <li><strong>Digital signatures:</strong> Prove origin and integrity of documents and software.</li>
+  <li><strong>Authentication:</strong> Certificates, tokens, and challenge–response protocols.</li>
+  <li><strong>End-to-end encryption (E2EE):</strong> Messaging apps where only endpoints hold keys — <a href="#sec-5-14">Section 5.14</a>, <a href="#sec-5-16">Section 5.16</a>.</li>
+</ul>
+<figure class="diagram figure-photo" aria-labelledby="fig-apps-crypto-caption">
+  <img src="../../assets/images/topic-05/applications-cryptography.png"
+       alt="Applications of cryptography: passwords, HTTPS, signatures, and more"
+       width="640" height="auto" loading="lazy" decoding="async" />
+  <figcaption id="fig-apps-crypto-caption">Real-world applications of cryptography across security domains.</figcaption>
+</figure>
+</section>
+<section id="sec-5-17">
+<h2>5.17 Future of Encryption</h2>
+<p>
+  The future of encryption will address quantum computing, cloud security, and evolving privacy needs. Emerging
+  approaches include:
+</p>
+<ul>
+  <li>
+    <strong>Bring Your Own Encryption (BYOE):</strong> Organizations use their own encryption methods and manage keys
+    instead of relying solely on cloud providers, retaining greater control over data in the cloud.
+  </li>
+  <li>
+    <strong>Homomorphic encryption:</strong> Enables computation on encrypted data without decrypting it first—see
+    <a href="#asym-14">Section 5.13 — Homomorphic Encryption</a>.
+  </li>
+  <li>
+    <strong>Quantum cryptography:</strong> Uses quantum mechanics (e.g., Quantum Key Distribution) for key exchange
+    resistant to eavesdropping—see <a href="#sec-5-13">Section 5.13</a> (QKD).
+  </li>
+  <li>
+    <strong>Honey encryption:</strong> Returns realistic but false plaintext when an incorrect key is used, misleading
+    attackers and adding protection for highly sensitive data.
+  </li>
+  <li>
+    <strong>Post-quantum cryptography:</strong> New algorithms designed to resist quantum attacks—covered under
+    <a href="#asym-15">Section 5.13 — PQC</a>.
+  </li>
+</ul>
+<p>
+  Digital authentication remains a cornerstone of cybersecurity: combining strong encryption with sound key management
+  and modern protocols (HTTPS, E2EE) is essential as threats continue to evolve.
+</p>
+</section>
+
+      <div class="callout exam" id="key-takeaways">
+        <div class="callout-title">Key takeaways — Topic 5</div>
+        <ul>
+          <li>Cryptology = cryptography (build) + cryptanalysis (break).</li>
+          <li>Read in order: definitions → classical ciphers → modern encryption → types → algorithm catalogs.</li>
+          <li>Symmetric (AES) for speed; asymmetric (RSA/ECC) for keys and signatures; hashes for integrity.</li>
+          <li>Kerckhoffs: security in the key, not secret algorithms.</li>
+          <li>HTTPS/TLS and E2EE apply these primitives in real networks.</li>
+          <li>MAC, HMAC, and digital signatures — <a href="06-hashing-and-digital-signatures.html">Topic 6</a>.</li>
+        </ul>
+      </div>
+
+<footer class="page-footer">
         <a href="04-security-kernel.html">← Topic 4</a>
         <a href="../index.html">Book index</a>
         <a href="../../index.html">All books</a>
-        <span>Topic 6 — coming soon</span>
+        <a href="06-hashing-and-digital-signatures.html">Topic 6 — Hashing &amp; Digital Signatures →</a>
       </footer>
     </main>
   </div>
